@@ -15,12 +15,13 @@ export const isAuthenticated = CatchAsyncError(
       );
     }
 
-    const decoded = jwt.verify(
-      access_token,
-      process.env.ACCESS_TOKEN as string
-    ) as JwtPayload;
-
-    if (!decoded) {
+    let decoded: JwtPayload;
+    try {
+      decoded = jwt.verify(
+        access_token,
+        process.env.ACCESS_TOKEN as string
+      ) as JwtPayload;
+    } catch (error) {
       return next(new ErrorHandler("Access token is not valid!", 400));
     }
 

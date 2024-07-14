@@ -10,7 +10,7 @@ interface IReview extends Document {
   user: object;
   rating: number;
   comment: string;
-  commentReplies?: IComment[];
+  commentReplies: IComment[];
 }
 
 interface ILink extends Document {
@@ -48,55 +48,88 @@ interface ICourse extends Document {
   purchased?: number;
 }
 
-const commentSchema = new Schema<IComment>({
-  user: { type: Schema.Types.Mixed, required: true },
-  comment: { type: String, required: true },
-  commentReplies: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-});
-
 const reviewSchema = new Schema<IReview>({
-  user: { type: Schema.Types.Mixed, required: true },
-  rating: { type: Number, default: 0, required: true },
-  comment: { type: String, required: true },
-  commentReplies: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+  user: Object,
+  rating: {
+    type: Number,
+    default: 0,
+  },
+  comment: String,
 });
 
 const linkSchema = new Schema<ILink>({
-  title: { type: String, required: true },
-  url: { type: String, required: true },
+  title: String,
+  url: String,
+});
+
+const commentSchema = new Schema<IComment>({
+  user: Object,
+  comment: String,
+  commentReplies: [Object],
 });
 
 const courseDataSchema = new Schema<ICourseData>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  videoUrl: { type: String, required: true },
-  videoThumbnail: { type: Schema.Types.Mixed, required: true },
-  videoSection: { type: String, required: true },
-  videoLength: { type: Number, required: true },
-  videoPlayer: { type: String, required: true },
+  videoUrl: String,
+  title: String,
+  videoSection: String,
+  description: String,
+  videoLength: Number,
+  videoPlayer: String,
   links: [linkSchema],
-  suggestion: { type: String, required: true },
+  suggestion: String,
   questions: [commentSchema],
 });
 
 const courseSchema = new Schema<ICourse>({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  estimatedPrice: { type: Number },
-  thumbnail: {
-    public_id: { type: String, required: true },
-    url: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
   },
-  tags: { type: String, required: true },
-  level: { type: String, required: true },
-  demoUrl: { type: String, required: true },
-  benefits: [{ title: { type: String, required: true } }],
-  prerequisites: [{ title: { type: String, required: true } }],
+  description: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  estimatedPrice: {
+    type: Number,
+  },
+  thumbnail: {
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+  tags: {
+    type: String,
+    required: true,
+  },
+  level: {
+    type: String,
+    required: true,
+  },
+  demoUrl: {
+    type: String,
+    required: true,
+  },
+  benefits: [{ title: String }],
+  prerequisites: [{ title: String }],
   reviews: [reviewSchema],
   courseData: [courseDataSchema],
-  ratings: { type: Number, default: 0 },
-  purchased: { type: Number, default: 0 },
+  ratings: {
+    type: Number,
+    default: 0,
+  },
+  purchased: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
