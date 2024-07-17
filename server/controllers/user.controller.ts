@@ -406,7 +406,7 @@ export const updateAvatar = CatchAsyncError(
         };
 
         await user.save();
-        await redis.set(userId.toString(), JSON.stringify(user)); // Update user data in Redis
+        await redis.set(userId.toString(), JSON.stringify(user)); 
 
         res.status(200).json({
           success: true,
