@@ -13,7 +13,7 @@ import {
   sendToken,
 } from "../utils/jwt";
 import { redis } from "../utils/redis";
-import { getUserById } from "../services/user.service";
+import { getAllUsersService, getUserById, updateUserRoleService } from "../services/user.service";
 require("dotenv").config();
 
 //register user
@@ -406,7 +406,7 @@ export const updateAvatar = CatchAsyncError(
         };
 
         await user.save();
-        await redis.set(userId.toString(), JSON.stringify(user)); 
+        await redis.set(userId.toString(), JSON.stringify(user));
 
         res.status(200).json({
           success: true,
@@ -415,7 +415,29 @@ export const updateAvatar = CatchAsyncError(
       } else {
         return next(new ErrorHandler("Avatar image not provided", 400));
       }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
 
+// get all users --only for admin
+export const getAllUsersForAdmin = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// update user role --only for admin
+export const updateUserRole = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(res, id, role);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

@@ -1,3 +1,4 @@
+import { Response } from "express";
 import userModel, { IUser } from "../models/user.model";
 import { redis } from "../utils/redis";
 
@@ -22,4 +23,28 @@ export const getUserById = async (id: string): Promise<IUser | null> => {
     console.error("Error fetching user by ID:", error);
     return null;
   }
+};
+
+// get all users
+export const getAllUsersService = async (res: Response) => {
+  const users = await userModel.find().sort({ createdAt: -1 });
+
+  res.status(201).json({
+    success: true,
+    users,
+  });
+};
+
+// update user role
+export const updateUserRoleService = async (
+  res: Response,
+  id: string,
+  role: string
+) => {
+  const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+
+  res.status(201).json({
+    success: true,
+    user,
+  });
 };
