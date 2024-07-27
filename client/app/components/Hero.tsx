@@ -18,7 +18,7 @@ const Hero: FC<Props> = () => {
 
   return (
     <div className="relative w-full flex flex-col lg:flex-row items-center text-black dark:text-white py-10 lg:py-20 px-5">
-      <div className="relative w-full lg:w-1/2 flex flex-col items-center lg:items-start z-10 text-center lg:text-left">
+      <div className="relative w-full lg:w-1/2 flex flex-col items-center lg:items-start z-10 text-center lg:text-left p-4">
         <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-4">
           Transform Your Learning Experience
         </h1>
