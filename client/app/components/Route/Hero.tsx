@@ -48,7 +48,7 @@ const Hero: FC<Props> = () => {
       <div className="w-full lg:w-[40%] flex items-center justify-end pt-[70px] lg:pt-0 z-10">
         <div className="relative flex items-center justify-end w-full">
           <Image
-            src={require("../../public/IT hero.png")}
+            src={require("/public/IT hero.png")}
             alt="Hero Image"
             className="object-contain w-4/5 h-auto z-10"
           />
