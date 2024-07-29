@@ -20,7 +20,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
   const [editProfile, { isSuccess: success, error: updateError }] =
     useEditProfileMutation();
-  const [loadUser, setLoaduser] = useState(false);
+  const [loadUser, setLoadUser] = useState(false);
   const {} = useLoadUserQuery(undefined, { skip: loadUser ? false : true });
 
   const imageHandler = async (e: any) => {
@@ -37,7 +37,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
 
   useEffect(() => {
     if (isSuccess || success) {
-      setLoaduser(true);
+      setLoadUser(true);
     }
     if (error || updateError) {
       console.log(error);
