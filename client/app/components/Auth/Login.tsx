@@ -116,12 +116,12 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
         <div className="flex items-center justify-center my-3">
           <FcGoogle
             size={30}
-            className="cursor-ponter mr-2"
+            className="cursor-pointer mr-2"
             onClick={() => signIn("google")}
           />
           <AiFillGithub
             size={30}
-            className="cursor-ponter ml-2"
+            className="cursor-pointer ml-2"
             onClick={() => signIn("github")}
           />
         </div>
