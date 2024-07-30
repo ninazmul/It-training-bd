@@ -20,7 +20,7 @@ export const userApi = apiSlice.injectEndpoints({
     }),
     updatePassword: builder.mutation({
       query: ({ oldPassword, newPassword }) => ({
-        url: "update-user-password",
+        url: "update-user-pass",
         method: "PUT",
         body: { oldPassword, newPassword },
         credentials: "include" as const,
@@ -28,14 +28,14 @@ export const userApi = apiSlice.injectEndpoints({
     }),
     getAllUsers: builder.query({
       query: () => ({
-        url: "get-users",
+        url: "get-all-users",
         method: "GET",
         credentials: "include" as const,
       }),
     }),
     updateUserRole: builder.mutation({
       query: ({ email, role }) => ({
-        url: "update-user",
+        url: "update-user-role",
         method: "PUT",
         body: { email, role },
         credentials: "include" as const,
