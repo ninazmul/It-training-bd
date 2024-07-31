@@ -32,18 +32,28 @@ export const registrationUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, email, password } = req.body;
+
       const isEmailExist = await userModel.findOne({ email });
       if (isEmailExist) {
-        return next(new ErrorHandler("Email already exist!", 400));
+        return next(new ErrorHandler("Email already exist", 400));
       }
-      const user: IRegistrationBody = { name, email, password };
+
+      const user: IRegistrationBody = {
+        name,
+        email,
+        password,
+      };
+
       const activationToken = createActivationToken(user);
+
       const activationCode = activationToken.activationCode;
+
       const data = { user: { name: user.name }, activationCode };
       const html = await ejs.renderFile(
         path.join(__dirname, "../mails/activation-mail.ejs"),
         data
       );
+
       try {
         await sendMail({
           email: user.email,
@@ -51,6 +61,7 @@ export const registrationUser = CatchAsyncError(
           template: "activation-mail.ejs",
           data,
         });
+
         res.status(201).json({
           success: true,
           message: `Please check your email: ${user.email} to activate your account!`,
@@ -64,6 +75,7 @@ export const registrationUser = CatchAsyncError(
     }
   }
 );
+
 
 interface IActivationToken {
   token: string;
@@ -183,14 +195,17 @@ export const updateAccessToken = CatchAsyncError(
         process.env.REFRESH_TOKEN as string
       ) as JwtPayload;
 
-      const message = "Please login to access this resource.";
+      const message = "Could not refresh token";
       if (!decoded) {
         return next(new ErrorHandler(message, 400));
       }
 
       const session = await redis.get(decoded.id as string);
+
       if (!session) {
-        return next(new ErrorHandler(message, 400));
+        return next(
+          new ErrorHandler("Please login for access this resources", 400)
+        );
       }
 
       const user = JSON.parse(session);
@@ -198,13 +213,16 @@ export const updateAccessToken = CatchAsyncError(
       const accessToken = jwt.sign(
         { id: user._id },
         process.env.ACCESS_TOKEN as string,
-        { expiresIn: "5m" }
+        {
+          expiresIn: "5m",
+        }
       );
-
       const refreshToken = jwt.sign(
         { id: user._id },
         process.env.REFRESH_TOKEN as string,
-        { expiresIn: "3d" }
+        {
+          expiresIn: "3d",
+        }
       );
 
       req.user = user;
@@ -212,12 +230,9 @@ export const updateAccessToken = CatchAsyncError(
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
-      await redis.set(user._id, JSON.stringify(user), "EX", 604800); // 7days
+      await redis.set(user._id, JSON.stringify(user), "EX", 604800); //7 days
 
-      res.status(200).json({
-        status: "success",
-        accessToken,
-      });
+      next();
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
