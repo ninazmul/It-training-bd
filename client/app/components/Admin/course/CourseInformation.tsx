@@ -275,8 +275,6 @@ const CourseInformation: FC<Props> = ({
             className="w-full 800px:w-[180px] h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
           />
         </div>
-        <br />
-        <br />
       </form>
     </div>
   );
