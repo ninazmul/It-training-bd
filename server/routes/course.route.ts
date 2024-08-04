@@ -85,4 +85,5 @@ courseRouter.delete(
   deleteCourse
 );
 
+
 export default courseRouter;

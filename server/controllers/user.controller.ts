@@ -449,8 +449,16 @@ export const getAllUsersForAdmin = CatchAsyncError(
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id, role } = req.body;
-      updateUserRoleService(res, id, role);
+      const { email, role } = req.body;
+      const user = await userModel.findOne({ email });
+      if (user) {
+        await updateUserRoleService(user.id, role, res);
+      } else {
+        res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

@@ -37,14 +37,27 @@ export const getAllUsersService = async (res: Response) => {
 
 // update user role
 export const updateUserRoleService = async (
-  res: Response,
   id: string,
-  role: string
+  role: string,
+  res: Response
 ) => {
-  const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
-
-  res.status(201).json({
-    success: true,
-    user,
-  });
+  try {
+    const user = await userModel.findByIdAndUpdate(id, { role }, { new: true });
+    if (user) {
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User update failed",
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
