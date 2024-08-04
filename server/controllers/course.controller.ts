@@ -44,36 +44,45 @@ export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      let thumbnail = data.thumbnail;
+      const thumbnail = data.thumbnail;
 
-      if (thumbnail && typeof thumbnail === "object" && thumbnail.public_id) {
+      const courseId = req.params.id;
+      const courseData = (await CourseModel.findById(courseId)) as any;
+
+      if (thumbnail && !thumbnail.startsWith("https")) {
         await cloudinary.v2.uploader.destroy(thumbnail.public_id);
-      }
 
-      if (thumbnail && typeof thumbnail === "string") {
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
           folder: "courses",
         });
 
-        thumbnail = {
+        data.thumbnail = {
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
         };
       }
 
-      data.thumbnail = thumbnail;
-
-      const courseId = req.params.id;
+      if (thumbnail.startsWith("https")) {
+        data.thumbnail = {
+          public_id: courseData?.thumbnail.public_id,
+          url: courseData?.thumbnail.url,
+        };
+      }
 
       const course = await CourseModel.findByIdAndUpdate(
         courseId,
-        { $set: data },
+        {
+          $set: data,
+        },
         { new: true }
       );
 
+      await redis.del("allCourses");
+      await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7 days
+
       res.status(201).json({
         success: true,
-        course: course,
+        course,
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -82,7 +91,6 @@ export const editCourse = CatchAsyncError(
 );
 
 // get single course --without purchasing
-
 export const getSingleCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
