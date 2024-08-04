@@ -12,7 +12,7 @@ export const courseApi = apiSlice.injectEndpoints({
     }),
     getAllCourses: builder.query({
       query: () => ({
-        url: "get-admin-courses",
+        url: "get-courses",
         method: "GET",
         credentials: "include" as const,
       }),
@@ -66,7 +66,7 @@ export const courseApi = apiSlice.injectEndpoints({
         credentials: "include" as const,
       }),
     }),
-    addAnwerInQuestion: builder.mutation({
+    addAnswerInQuestion: builder.mutation({
       query: ({ answer, courseId, contentId, questionId }) => ({
         url: "add-answer",
         body: {
@@ -114,7 +114,7 @@ export const {
   useGetCourseDetailsQuery,
   useGetCourseContentQuery,
   useAddNewQuestionMutation,
-  useAddAnwerInQuestionMutation,
+  useAddAnswerInQuestionMutation,
   useAddReviewInCourseMutation,
   useAddReplyInReviewMutation,
 } = courseApi;

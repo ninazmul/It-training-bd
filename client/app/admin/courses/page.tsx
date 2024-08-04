@@ -1,7 +1,7 @@
 "use client";
 
-import CreateCourse from "@/app/components/Admin/course/CreateCourse";
-import DashboardHeader from "@/app/components/Admin/DashboardHeader";
+import AllCourses from "@/app/components/Admin/course/AllCourses";
+import DashboardHero from "@/app/components/Admin/DashboardHero";
 import AdminSidebar from "@/app/components/Admin/sidebar/AdminSidebar";
 import AdminProtected from "@/app/hooks/adminProtected";
 import Heading from "@/app/utils/Heading";
@@ -21,8 +21,8 @@ const Page = () => {
             <AdminSidebar />
           </div>
           <div className="w-[85%]">
-            <DashboardHeader />
-            <CreateCourse />
+            <DashboardHero />
+            <AllCourses />
           </div>
         </div>
       </AdminProtected>
