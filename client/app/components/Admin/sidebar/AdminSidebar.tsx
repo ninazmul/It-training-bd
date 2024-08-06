@@ -132,18 +132,20 @@ const AdminSidebar: FC = () => {
             padding: "10px",
           }}
         >
-          <Image
-            alt="profile-user"
-            width={100}
-            height={100}
-            src={user.avatar ? user.avatar.url : "/default-avatar.png"}
-            style={{
-              cursor: "pointer",
-              borderRadius: "50%",
-              border: "3px solid #5b6fe6",
-              objectFit: "cover",
-            }}
-          />
+          <Link href={"/profile"}>
+            <Image
+              alt="profile-user"
+              width={100}
+              height={100}
+              src={user.avatar ? user.avatar.url : "/default-avatar.png"}
+              style={{
+                cursor: "pointer",
+                borderRadius: "50%",
+                border: "3px solid #5b6fe6",
+                objectFit: "cover",
+              }}
+            />
+          </Link>
           <Typography
             sx={{
               marginTop: "10px",
