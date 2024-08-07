@@ -261,7 +261,7 @@ const AdminSidebar: FC = () => {
         />
         <SidebarItem
           title="Order Analytics"
-          to="/admin/order-analytics"
+          to="/admin/orders-analytics"
           icon={
             <MapOutlinedIcon
               sx={{ color: theme === "dark" ? "#fff" : "#000" }}
@@ -272,20 +272,11 @@ const AdminSidebar: FC = () => {
         />
         <SidebarItem
           title="User Analytics"
-          to="/admin/user-analytics"
+          to="/admin/users-analytics"
           icon={
             <ManageHistoryIcon
               sx={{ color: theme === "dark" ? "#fff" : "#000" }}
             />
-          }
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <SidebarItem
-          title="Settings"
-          to="/admin/settings"
-          icon={
-            <SettingsIcon sx={{ color: theme === "dark" ? "#fff" : "#000" }} />
           }
           selected={selected}
           setSelected={setSelected}
