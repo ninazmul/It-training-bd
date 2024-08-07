@@ -1,4 +1,4 @@
-import UserAnalytics from "@/app/components/Admin/analytics/UsersAnalytics";
+import OrdersAnalytics from "@/app/components/Admin/analytics/OrdersAnalytics";
 import DashboardHero from "@/app/components/Admin/DashboardHero";
 import AdminSidebar from "@/app/components/Admin/sidebar/AdminSidebar";
 import Heading from "@/app/utils/Heading";
@@ -19,7 +19,7 @@ const page = (props: Props) => {
         </div>
         <div className="w-[85%]">
           <DashboardHero />
-          <UserAnalytics />
+          <OrdersAnalytics/>
         </div>
       </div>
     </div>
