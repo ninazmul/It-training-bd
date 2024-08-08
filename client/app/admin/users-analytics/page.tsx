@@ -13,7 +13,7 @@ const page = (props: Props) => {
         description="LMS is a platform for students to learn and get help from teachers"
         keywords="Programming, MERN, Redux, Machine Learning"
       />
-      <div className="flex h-screen">
+      <div className="flex h-full">
         <div className="1500px:w-[16%] w-1/5">
           <AdminSidebar />
         </div>

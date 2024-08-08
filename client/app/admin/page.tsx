@@ -1,26 +1,25 @@
-"use client";
-
 import React from "react";
 import Heading from "../utils/Heading";
-import AdminProtected from "../hooks/adminProtected";
 import AdminSidebar from "../components/Admin/sidebar/AdminSidebar";
+import AdminProtected from "../hooks/adminProtected";
 import DashboardHero from "../components/Admin/DashboardHero";
+type Props = {};
 
-const Page = () => {
+const page = (props: Props) => {
   return (
     <div>
       <AdminProtected>
         <Heading
-          title={`Admin Dashboard - IT Training BD`}
-          description="Elearning is a prlatform for student to learn and get help from teachers"
-          keywords="Programming, MERN Stack, Redux, Machine Learning"
+          title="LMS - Admin"
+          description="LMS is a platform for students to learn and get help from teachers"
+          keywords="Programming, MERN, Redux, Machine Learning"
         />
-        <div className="flex h-screen">
+        <div className="flex min-h-screen">
           <div className="1500px:w-[16%] w-1/5">
             <AdminSidebar />
           </div>
           <div className="w-[85%]">
-            <DashboardHero />
+            <DashboardHero isDashboard={true} />
           </div>
         </div>
       </AdminProtected>
@@ -28,4 +27,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;

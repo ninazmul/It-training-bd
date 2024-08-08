@@ -42,13 +42,13 @@ const CourseAnalytics = (props: Props) => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="h-screen">
+        <div className="h-full">
           <div className="mt-[50px]">
             <h1 className={`${styles.title} px-5 !text-start`}>
               Courses Analytics
             </h1>
             <p className={`${styles.label} px-5`}>
-              Last 12 months analytis data
+              Last 12 months analytics data
             </p>
           </div>
 
