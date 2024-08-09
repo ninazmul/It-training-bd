@@ -58,7 +58,7 @@ const Hero: FC<Props> = () => {
         </div>
       </div>
 
-      <div className="absolute hero_animation rounded-full bottom-0 w-[300px] md:w-4/5 h-[300px] md:h-2/3 lg:w-1/3 lg:h-4/5 lg:right-[10%]"></div>
+      <div className="absolute hero_animation rounded-full bottom-5 w-[300px] md:w-4/5 h-[300px] md:h-2/3 lg:w-1/3 lg:h-4/5 lg:right-[10%]"></div>
       <div className="w-full lg:w-[40%] flex items-center justify-end pt-[70px] lg:pt-0 z-10">
         <div className="relative flex items-center justify-end w-full right-[5%] md:right-[10%] lg:right-0">
           <Image
