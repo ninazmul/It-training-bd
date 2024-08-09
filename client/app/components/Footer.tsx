@@ -120,8 +120,8 @@ const Footer = (props: Props) => {
           </div>
         </div>
         <br />
-        <p className="text-center text-black dark:text-white">
-          Copyright @ 2023 IT Training BD | All Rights Reverse
+        <p className="text-center text-black dark:text-white text-sm">
+          Copyright @ 2024 IT Training BD | All Rights Reverse
         </p>
       </div>
       <br />
