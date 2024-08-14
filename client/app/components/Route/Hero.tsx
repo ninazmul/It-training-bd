@@ -1,4 +1,5 @@
 "use client";
+
 import React, { FC, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BiSearch } from "react-icons/bi";
@@ -8,7 +9,7 @@ import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
 type Props = {};
 
 const Hero: FC<Props> = () => {
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const { data, refetch, isLoading } = useGetHeroDataQuery("Banner", {
@@ -19,9 +20,10 @@ const Hero: FC<Props> = () => {
 
   useEffect(() => {
     if (data) {
+      console.log("Image URL:", data?.layout?.banner?.image?.url);
       setTitle(data?.layout?.banner.title);
       setSubTitle(data?.layout?.banner.subTitle);
-      setImage(data?.layout?.banner?.image?.url);
+      setImage(data?.layout?.banner?.image?.url || null);
     }
   }, [data]);
 
@@ -61,13 +63,19 @@ const Hero: FC<Props> = () => {
       <div className="absolute hero_animation rounded-full bottom-5 w-[300px] md:w-4/5 h-[300px] md:h-2/3 lg:w-1/3 lg:h-4/5 lg:right-[10%]"></div>
       <div className="w-full lg:w-[40%] flex items-center justify-end pt-[70px] lg:pt-0 z-10">
         <div className="relative flex items-center justify-end w-full right-[5%] md:right-[10%] lg:right-0">
-          <Image
-            src={image}
-            width={350}
-            height={350}
-            alt="Hero Image"
-            className="object-contain w-4/5 h-auto z-10"
-          />
+          {image ? (
+            <Image
+              src={image}
+              width={350}
+              height={350}
+              alt="Hero Image"
+              className="object-contain w-4/5 h-auto z-10"
+            />
+          ) : (
+            <div className="w-full h-[350px] bg-gray-200 flex items-center justify-center text-gray-600">
+              No Image Available
+            </div>
+          )}
         </div>
       </div>
     </div>

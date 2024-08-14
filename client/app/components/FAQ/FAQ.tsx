@@ -7,7 +7,7 @@ type Props = {};
 
 const FAQ = (props: Props) => {
   const { data } = useGetHeroDataQuery("FAQ", {});
-  const [activeQuestion, setActiveQuestion] = useState(null);
+  const [activeQuestion, setActiveQuestion] = useState<string | null>(null);
   const [questions, setQuestions] = useState<any[]>([]);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const FAQ = (props: Props) => {
     }
   }, [data]);
 
-  const toggleQuestion = (id: any) => {
+  const toggleQuestion = (id: string) => {
     setActiveQuestion(activeQuestion === id ? null : id);
   };
 
@@ -30,9 +30,9 @@ const FAQ = (props: Props) => {
           <dl className="space-y-8">
             {questions.map((q) => (
               <div
-                key={q.id}
+                key={q._id} // Ensure that each item has a unique key
                 className={`${
-                  q._id !== questions[0]?._id && "border-t"
+                  q._id !== questions[0]?._id ? "border-t" : ""
                 } border-gray-200 pt-6`}
               >
                 <dt className="text-lg">
@@ -45,9 +45,9 @@ const FAQ = (props: Props) => {
                     </span>
                     <span className="ml-6 flex-shrink-0">
                       {activeQuestion === q._id ? (
-                        <HiMinus className=" h-6 w-6 text-black dark:text-white" />
+                        <HiMinus className="h-6 w-6 text-black dark:text-white" />
                       ) : (
-                        <HiPlus className=" h-6 w-6 text-black dark:text-white" />
+                        <HiPlus className="h-6 w-6 text-black dark:text-white" />
                       )}
                     </span>
                   </button>

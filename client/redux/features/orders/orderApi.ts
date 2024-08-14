@@ -3,27 +3,10 @@ import { apiSlice } from "../api/apiSlice";
 export const courseApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllOrders: builder.query({
-      query: (type) => ({
+      query: () => ({
         url: `get-orders`,
         method: "GET",
-        credentials: "include" as const,
-      }),
-    }),
-    getStripePublishableKey: builder.query({
-      query: () => ({
-        url: `payment/stripepublisahblekey`,
-        method: "GET",
-        credentials: "include" as const,
-      }),
-    }),
-    createPaymentIntent: builder.mutation({
-      query: (amount) => ({
-        url: `payment`,
-        method: "POST",
-        body: {
-          amount,
-        },
-        credentials: "include" as const,
+        credentials: "include",
       }),
     }),
     createOrder: builder.mutation({
@@ -34,7 +17,15 @@ export const courseApi = apiSlice.injectEndpoints({
           courseId,
           payment_info,
         },
-        credentials: "include" as const,
+        credentials: "include",
+      }),
+    }),
+    createPayment: builder.mutation({
+      query: (data) => ({
+        url: `payment`,
+        method: "POST",
+        body: data,
+        credentials: "include",
       }),
     }),
   }),
@@ -42,7 +33,6 @@ export const courseApi = apiSlice.injectEndpoints({
 
 export const {
   useGetAllOrdersQuery,
-  useGetStripePublishableKeyQuery,
-  useCreatePaymentIntentMutation,
+  useCreatePaymentMutation,
   useCreateOrderMutation,
 } = courseApi;

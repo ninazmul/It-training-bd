@@ -7,6 +7,7 @@ import Hero from "./components/Route/Hero";
 import Courses from "./components/Route/Courses";
 import Reviews from "./components/Route/Reviews";
 import FAQ from "./components/FAQ/FAQ";
+import Footer from "./components/Footer";
 
 interface PageProps {}
 
@@ -33,6 +34,7 @@ const Page: FC<PageProps> = () => {
       <Courses />
       <Reviews />
       <FAQ />
+      <Footer />
     </div>
   );
 };

@@ -3,18 +3,20 @@ import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import {
   createOrder,
   getAllOrdersForAdmin,
+  newPayment,
 } from "../controllers/order.controller";
-import { updateAccessToken } from "../controllers/user.controller";
+
 const orderRouter = express.Router();
 
 orderRouter.post("/create-order", isAuthenticated, createOrder);
 
 orderRouter.get(
   "/get-all-orders",
-  updateAccessToken,
   isAuthenticated,
   authorizeRoles("admin"),
   getAllOrdersForAdmin
 );
+
+orderRouter.post("/payment", isAuthenticated, newPayment);
 
 export default orderRouter;

@@ -1,9 +1,13 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+export interface IPaymentInfo {
+  transaction_id?: string; 
+}
+
 export interface IOrder extends Document {
   courseId: string;
   userId: string;
-  payment_info: object;
+  payment_info?: IPaymentInfo;
 }
 
 export const OrderSchema = new Schema<IOrder>(
@@ -17,8 +21,8 @@ export const OrderSchema = new Schema<IOrder>(
       required: true,
     },
     payment_info: {
-      type: Object,
-      // required:true
+      type: Map,
+      of: Schema.Types.Mixed,
     },
   },
   { timestamps: true }

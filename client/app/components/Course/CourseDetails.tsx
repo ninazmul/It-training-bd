@@ -13,40 +13,54 @@ import Image from "next/image";
 import defaultImage from "../../../public/lms.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import ContentCourseList from "./ContentCourseList";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckOutForm from "../Payment/CheckOutForm";
+import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
+import { useRouter } from "next/navigation";
 
 type Props = {
   data: any;
-  clientSecret: string;
-  stripePromise: any;
-  setRoute: any;
-  setOpen: any;
+  setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
 };
 
 const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
-  const [open, setOpen] = useState(false);
+  const [createPayment] = useCreatePaymentMutation();
   const { data: userData } = useLoadUserQuery(undefined, {});
   const [user, setUser] = useState<any>();
+  const router = useRouter();
 
   useEffect(() => {
-    setUser(userData?.user);
+    if (userData?.success && userData?.data) {
+      setUser(userData.data);
+    }
   }, [userData]);
 
-  const discountprecentange =
-    ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
-
-  const discountprecentangePrice = discountprecentange.toFixed(0);
-
-  const isPurchased =
-    user && user?.courses?.find((item: any) => item._id === data._id);
-
-  const handleOrder = (e: any) => {
+  const handleOrder = async () => {
     if (user) {
-      setOpen(true);
+      try {
+        const paymentResponse = await createPayment({
+          amount: data.estimatedPrice || data.price,
+        }).unwrap();
+        if (paymentResponse?.payment_url) {
+          window.location.href = paymentResponse.payment_url;
+        }
+      } catch (error) {
+        console.error("Payment error:", error);
+      }
     } else {
       setRoute("Login");
       openAuthModal(true);
     }
   };
+
+  const discountPercentage =
+    ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
+
+  const discountPercentagePrice = discountPercentage.toFixed(0);
+
+  const isPurchased =
+    user && user?.courses?.find((item: any) => item._id === data._id);
 
   return (
     <div className="w-full px-4 py-5">
@@ -204,24 +218,24 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
                   {data.price}$
                 </h5>
                 <h4 className="mt-2 sm:mt-0 sm:ml-5 text-xl text-red-600">
-                  {discountprecentangePrice}% Off
+                  {discountPercentagePrice}% Off
                 </h4>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center mt-5">
-                {isPurchased ? (
+              <div className="mt-5">
+                {!isPurchased ? (
                   <Link
-                    className={`${styles.button} w-full sm:w-[180px] my-3 bg-red-600 text-center`}
+                    className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
                     href={`/course-access/${data._id}`}
                   >
                     Enter Course
                   </Link>
                 ) : (
                   <button
-                    className={`${styles.button} w-full sm:w-[180px] my-3 bg-red-600 text-center`}
+                    className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
                     onClick={handleOrder}
                   >
-                    Buy Now ${data.estimatedPrice || data.price}
+                    Buy Now
                   </button>
                 )}
               </div>
@@ -236,20 +250,6 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
           </div>
         </div>
       </div>
-
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="relative z-50 w-full max-w-lg px-4 py-5 bg-white rounded-lg">
-            {/* Your Stripe integration form goes here */}
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-2 right-2 text-2xl font-semibold"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

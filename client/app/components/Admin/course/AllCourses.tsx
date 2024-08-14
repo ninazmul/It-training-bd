@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState, FC } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { Box, Button, Modal } from "@mui/material";
@@ -18,7 +19,7 @@ import { DataGrid } from "@mui/x-data-grid";
 type Props = {};
 
 const AllCourses: FC<Props> = (props) => {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const [courseId, setCourseId] = useState("");
   const { isLoading, data, error, refetch } = useGetAllCoursesQuery(
@@ -35,78 +36,58 @@ const AllCourses: FC<Props> = (props) => {
     { field: "purchased", headerName: "Purchased", flex: 0.5 },
     { field: "created_at", headerName: "Created At", flex: 0.5 },
     {
-      field: "  ",
+      field: "edit",
       headerName: "Edit",
       flex: 0.2,
-      renderCell: (params: any) => {
-        return (
-          <>
-            <Link
-              href={`/admin/edit-course/${params.row.id}`}
-              style={{ display: "block", marginTop: "16px" }}
-            >
-              <FiEdit2 className="dark:text-white text-black" size={20} />
-            </Link>
-          </>
-        );
-      },
+      renderCell: (params: any) => (
+        <Link
+          href={`/admin/edit-course/${params.row.id}`}
+          style={{ display: "block", marginTop: "16px" }}
+        >
+          <FiEdit2 className="dark:text-white text-black" size={20} />
+        </Link>
+      ),
     },
     {
-      field: " ",
+      field: "delete",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: any) => {
-        return (
-          <>
-            <Button
-              onClick={() => {
-                setOpen(!open);
-                setCourseId(params.row.id);
-              }}
-            >
-              <AiOutlineDelete
-                className="dark:text-white text-black"
-                size={20}
-              />
-            </Button>
-          </>
-        );
-      },
+      renderCell: (params: any) => (
+        <Button
+          onClick={() => {
+            setOpen(true);
+            setCourseId(params.row.id);
+          }}
+        >
+          <AiOutlineDelete className="dark:text-white text-black" size={20} />
+        </Button>
+      ),
     },
   ];
 
-  const rows: any = [];
-
-  {
-    data &&
-      data.courses.forEach((item: any) => {
-        rows.push({
-          id: item._id,
-          title: item.name,
-          purchased: item.purchased,
-          ratings: item.ratings,
-          created_at: format(item.createdAt),
-        });
-      });
-  }
+  const rows =
+    data?.courses.map((item: any) => ({
+      id: item._id,
+      title: item.name,
+      purchased: item.purchased,
+      ratings: item.ratings,
+      created_at: format(item.createdAt),
+    })) || [];
 
   useEffect(() => {
     if (isSuccess) {
       refetch();
-      toast.success("Course role deleted successfully");
+      toast.success("Course deleted successfully");
       setOpen(false);
     }
     if (errorDelete) {
-      if ("data" in errorDelete) {
-        const errorMessage = errorDelete as any;
-        toast.error(errorMessage.data.message);
-      }
+      const errorMessage = errorDelete as any;
+      toast.error(errorMessage?.data?.message || "An error occurred");
     }
   }, [isSuccess, errorDelete]);
 
   const handleDelete = async () => {
-    const id = courseId;
-    await deleteCourse(id);
+    await deleteCourse(courseId);
   };
 
   return (
@@ -172,7 +153,7 @@ const AllCourses: FC<Props> = (props) => {
           {open && (
             <Modal
               open={open}
-              onClose={() => setOpen(!open)}
+              onClose={() => setOpen(false)}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
@@ -187,12 +168,12 @@ const AllCourses: FC<Props> = (props) => {
                   >
                     Cancel
                   </Button>
-                  <button
+                  <Button
                     className="px-4 py-2 bg-red-500 text-white rounded"
                     onClick={handleDelete}
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
               </Box>
             </Modal>

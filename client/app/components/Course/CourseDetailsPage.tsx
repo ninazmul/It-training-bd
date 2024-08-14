@@ -5,10 +5,9 @@ import Heading from "@/app/utils/Heading";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
-import { useCreatePaymentIntentMutation, useGetStripePublishableKeyQuery } from "@/redux/features/orders/orderApi";
+import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
 import Loader from "../Loader/Loader";
 import CourseDetails from "./CourseDetails";
-import { loadStripe } from "@stripe/stripe-js";
 
 type Props = {
   id: string;
@@ -18,28 +17,25 @@ const CourseDetailsPage = ({ id }: Props) => {
   const [route, setRoute] = useState("Login");
   const [open, setOpen] = useState(false);
   const { data, isLoading } = useGetCourseDetailsQuery(id);
-  const { data: config } = useGetStripePublishableKeyQuery({});
-  const [createPaymentIntent, { data: paymentIntentData }] =
-    useCreatePaymentIntentMutation();
-  const [stripePromise, setStripePromise] = useState<any>(null);
-  const [clientSecret, setClientSecret] = useState("");
+  const [createPayment, { data: paymentResponse }] = useCreatePaymentMutation();
+  const [paymentUrl, setPaymentUrl] = useState("");
 
   useEffect(() => {
-    if (config) {
-      const publishableKey = config?.publishableKey;
-      setStripePromise(loadStripe(publishableKey));
-    }
     if (data) {
-      const amount = Math.round(data.course.price * 100);
-      createPaymentIntent(amount);
+      const amount = Math.round(data.course.price); // SSLCommerz expects the amount in integer
+      createPayment({ amount });
     }
-  }, [config, data]);
+  }, [data]);
 
   useEffect(() => {
-    if (paymentIntentData) {
-      setClientSecret(paymentIntentData?.client_secret);
+    if (paymentResponse?.payment_url) {
+      setPaymentUrl(paymentResponse.payment_url);
+      // Redirect to the payment URL
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      }
     }
-  }, [paymentIntentData]);
+  }, [paymentResponse, paymentUrl]);
 
   return (
     <>
@@ -60,19 +56,8 @@ const CourseDetailsPage = ({ id }: Props) => {
               setRoute={setRoute}
               route={route}
             />
-            {/* {stripePromise && (
-              <CourseDetails
-                data={data?.course}
-                stripePromise={stripePromise}
-                clientSecret={clientSecret}
-                setOpen={setOpen}
-                setRoute={setRoute}
-              />
-            )} */}
             <CourseDetails
               data={data?.course}
-              stripePromise={stripePromise}
-              clientSecret={clientSecret}
               setOpen={setOpen}
               setRoute={setRoute}
             />

@@ -9,12 +9,44 @@ import path from "path";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.model";
+import { redis } from "../utils/redis";
+import axios from "axios";
 
-// create order
+const SSL_COMMERZ_STORE_ID = process.env.SSL_COMMERZ_STORE_ID;
+const SSL_COMMERZ_STORE_PASS = process.env.SSL_COMMERZ_STORE_PASS;
+
+// Create Order
 export const createOrder = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { courseId, payment_info } = req.body as IOrder;
+
+      // Verify SSLCommerz payment
+      if (payment_info) {
+        const { transaction_id } = payment_info;
+
+        // Verify payment status using SSLCommerz API
+        const verificationResponse = await axios
+          .post(
+            "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php",
+            null,
+            {
+              params: {
+                val_id: transaction_id,
+                store_id: SSL_COMMERZ_STORE_ID,
+                store_passwd: SSL_COMMERZ_STORE_PASS,
+                format: "json",
+              },
+            }
+          )
+          .catch(() => {
+            return next(new ErrorHandler("Error verifying payment!", 500));
+          });
+
+        if (verificationResponse?.data?.status !== "VALID") {
+          return next(new ErrorHandler("Payment not authorized!", 400));
+        }
+      }
 
       const user = await userModel.findById(req.user?._id);
 
@@ -72,6 +104,8 @@ export const createOrder = CatchAsyncError(
 
       user?.courses.push(course?.id);
 
+      await redis.set(req.user?._id as string, JSON.stringify(user));
+
       await user?.save();
 
       await NotificationModel.create({
@@ -95,13 +129,51 @@ export const createOrder = CatchAsyncError(
   }
 );
 
-// get all orders --only for admin
+// Get All Orders -- Only for Admin
 export const getAllOrdersForAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       getAllOrdersService(res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// New Payment using SSLCommerz
+export const newPayment = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { amount } = req.body;
+
+    if (!amount || typeof amount !== "number") {
+      return next(new ErrorHandler("Invalid amount", 400));
+    }
+
+    try {
+      // Prepare payment data for SSLCommerz
+      const paymentData = {
+        store_id: SSL_COMMERZ_STORE_ID,
+        store_passwd: SSL_COMMERZ_STORE_PASS,
+        total_amount: amount,
+        currency: "BDT", // Adjust based on your currency
+        tran_id: new Date().getTime().toString(),
+        success_url: "http://yourdomain.com/success",
+        fail_url: "http://yourdomain.com/fail",
+        cancel_url: "http://yourdomain.com/cancel",
+      };
+
+      // Send request to SSLCommerz
+      const response = await axios.post(
+        "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
+        paymentData
+      );
+
+      res.status(200).json({
+        success: true,
+        payment_url: response.data.GatewayPageURL,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
     }
   }
 );
