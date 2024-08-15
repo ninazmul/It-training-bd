@@ -1,4 +1,3 @@
-import { styles } from "@/app/styles/styles";
 import CoursePlayer from "@/app/utils/CoursePlayer";
 import Ratings from "@/app/utils/Ratings";
 import Link from "next/link";
@@ -6,17 +5,13 @@ import { format } from "timeago.js";
 import React, { useEffect, useState } from "react";
 import {
   IoMdCheckmarkCircleOutline,
-  IoMdCloseCircleOutline,
 } from "react-icons/io";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Image from "next/image";
 import defaultImage from "../../../public/lms.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import ContentCourseList from "./ContentCourseList";
-import { Elements } from "@stripe/react-stripe-js";
-import CheckOutForm from "../Payment/CheckOutForm";
 import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
-import { useRouter } from "next/navigation";
 
 type Props = {
   data: any;
@@ -28,7 +23,6 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
   const [createPayment] = useCreatePaymentMutation();
   const { data: userData } = useLoadUserQuery(undefined, {});
   const [user, setUser] = useState<any>();
-  const router = useRouter();
 
   useEffect(() => {
     if (userData?.success && userData?.data) {
@@ -41,7 +35,9 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
       try {
         const paymentResponse = await createPayment({
           amount: data.estimatedPrice || data.price,
+          courseId: data._id,
         }).unwrap();
+
         if (paymentResponse?.payment_url) {
           window.location.href = paymentResponse.payment_url;
         }
@@ -56,7 +52,6 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
 
   const discountPercentage =
     ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
-
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
   const isPurchased =
@@ -223,7 +218,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
               </div>
 
               <div className="mt-5">
-                {!isPurchased ? (
+                {isPurchased ? (
                   <Link
                     className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
                     href={`/course-access/${data._id}`}

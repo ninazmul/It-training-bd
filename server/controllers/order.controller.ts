@@ -18,37 +18,41 @@ const SSL_COMMERZ_STORE_PASS = process.env.SSL_COMMERZ_STORE_PASS;
 // Create Order
 export const createOrder = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
+    const { courseId, payment_info } = req.body as IOrder;
+
+    if (!payment_info || !courseId) {
+      return next(
+        new ErrorHandler("Missing course or payment information", 400)
+      );
+    }
+
     try {
-      const { courseId, payment_info } = req.body as IOrder;
-
       // Verify SSLCommerz payment
-      if (payment_info) {
-        const { transaction_id } = payment_info;
-
-        // Verify payment status using SSLCommerz API
-        const verificationResponse = await axios
-          .post(
-            "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php",
-            null,
-            {
-              params: {
-                val_id: transaction_id,
-                store_id: SSL_COMMERZ_STORE_ID,
-                store_passwd: SSL_COMMERZ_STORE_PASS,
-                format: "json",
-              },
-            }
-          )
-          .catch(() => {
-            return next(new ErrorHandler("Error verifying payment!", 500));
-          });
-
-        if (verificationResponse?.data?.status !== "VALID") {
-          return next(new ErrorHandler("Payment not authorized!", 400));
+      const { transaction_id } = payment_info;
+      const verificationResponse = await axios.post(
+        "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php",
+        null,
+        {
+          params: {
+            val_id: transaction_id,
+            store_id: SSL_COMMERZ_STORE_ID,
+            store_passwd: SSL_COMMERZ_STORE_PASS,
+            format: "json",
+          },
         }
+      );
+
+      if (verificationResponse?.data?.status !== "VALID") {
+        return next(new ErrorHandler("Payment not authorized!", 400));
       }
 
+      // Payment verified, proceed with order creation
       const user = await userModel.findById(req.user?._id);
+      const course = await CourseModel.findById(courseId);
+
+      if (!user || !course) {
+        return next(new ErrorHandler("User or Course not found!", 404));
+      }
 
       const courseExistInUser = user?.courses.some(
         (course: any) => course._id.toString() === courseId
@@ -60,15 +64,10 @@ export const createOrder = CatchAsyncError(
         );
       }
 
-      const course = await CourseModel.findById(courseId);
-
-      if (!course) {
-        return next(new ErrorHandler("Course not found!", 500));
-      }
-
       const data: any = {
         courseId: course._id,
         userId: user?._id,
+        payment_info,
       };
 
       const mailData = {
@@ -143,10 +142,10 @@ export const getAllOrdersForAdmin = CatchAsyncError(
 // New Payment using SSLCommerz
 export const newPayment = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { amount } = req.body;
+    const { amount, courseId } = req.body;
 
-    if (!amount || typeof amount !== "number") {
-      return next(new ErrorHandler("Invalid amount", 400));
+    if (!amount || !courseId || typeof amount !== "number") {
+      return next(new ErrorHandler("Invalid amount or course ID", 400));
     }
 
     try {
@@ -155,24 +154,31 @@ export const newPayment = CatchAsyncError(
         store_id: SSL_COMMERZ_STORE_ID,
         store_passwd: SSL_COMMERZ_STORE_PASS,
         total_amount: amount,
-        currency: "BDT", // Adjust based on your currency
+        currency: "BDT",
         tran_id: new Date().getTime().toString(),
-        success_url: "http://yourdomain.com/success",
-        fail_url: "http://yourdomain.com/fail",
-        cancel_url: "http://yourdomain.com/cancel",
+        success_url: "http://localhost:3000/success",
+        fail_url: "http://localhost:3000/fail",
+        cancel_url: "http://localhost:3000/cancel",
+        value_a: courseId,  // Pass courseId for later use
       };
 
       // Send request to SSLCommerz
       const response = await axios.post(
-        "https://sandbox.sslcommerz.com/gwprocess/v4/api.php",
+        "https://sandbox.sslcommerz.com/gwprocess/v3/api.php",
         paymentData
       );
+
+      // Check if payment URL is in the response
+      if (!response.data.GatewayPageURL) {
+        return next(new ErrorHandler("Payment URL not found!", 500));
+      }
 
       res.status(200).json({
         success: true,
         payment_url: response.data.GatewayPageURL,
       });
     } catch (error: any) {
+      console.error("Payment Error:", error);
       return next(new ErrorHandler(error.message, 500));
     }
   }
