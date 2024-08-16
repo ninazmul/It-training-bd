@@ -22,7 +22,7 @@ export const courseApi = apiSlice.injectEndpoints({
     }),
     createPayment: builder.mutation({
       query: (data) => ({
-        url: `payment`,
+        url: "payment",
         method: "POST",
         body: data,
         credentials: "include",

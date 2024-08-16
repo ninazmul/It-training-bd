@@ -159,7 +159,7 @@ export const newPayment = CatchAsyncError(
         success_url: "http://localhost:3000/success",
         fail_url: "http://localhost:3000/fail",
         cancel_url: "http://localhost:3000/cancel",
-        value_a: courseId,  // Pass courseId for later use
+        value_a: courseId, // Pass courseId for later use
       };
 
       // Send request to SSLCommerz

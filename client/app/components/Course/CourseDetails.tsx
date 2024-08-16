@@ -54,9 +54,9 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
     ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
-  const isPurchased =
-    user && user?.courses?.find((item: any) => item._id === data._id);
-
+ const courseExistInUser = user?.courses.some(
+   (course: any) => course._id === data?._id
+ );
   return (
     <div className="w-full px-4 py-5">
       <div className="w-full max-w-screen-xl mx-auto py-5">
@@ -218,7 +218,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
               </div>
 
               <div className="mt-5">
-                {isPurchased ? (
+                {courseExistInUser ? (
                   <Link
                     className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
                     href={`/course-access/${data._id}`}
