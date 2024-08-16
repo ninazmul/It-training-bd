@@ -47,7 +47,7 @@ const CourseContentMedia = ({
   const [reviewId, setReviewId] = useState("");
   const [replyActive, setReplyActive] = useState(false);
   const [
-    addnewQuestion,
+    addNewQuestion,
     { isSuccess, error, isLoading: questionCreationLoading },
   ] = useAddNewQuestionMutation();
   const [
@@ -90,7 +90,7 @@ const CourseContentMedia = ({
       toast.error("Question cant't be empty");
     } else {
       console.log({ question, courseId: id, contentId: data[activeVideo]._id });
-      addnewQuestion({
+      addNewQuestion({
         question,
         courseId: id,
         contentId: data[activeVideo]._id,
@@ -229,7 +229,7 @@ const CourseContentMedia = ({
       </h1>
       <br />
       <div className="w-full p-4 flex items-center justify-between bg-slate-500 bg-opacity-20 backdrop-blur shadow-[bg-slate-700] rounded shadow-inner">
-        {["Overview", "Recources", "Q&A", "Reviews"].map((text, index) => (
+        {["Overview", "Resources", "Q&A", "Reviews"].map((text, index) => (
           <h5
             key={index}
             className={`800px:text-[20px] cursor-pointer ${
@@ -280,8 +280,8 @@ const CourseContentMedia = ({
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               cols={40}
-              rows={5}
-              placeholder="Wriete your question..."
+              rows={5} 
+              placeholder="Write your question..."
               name=""
               id=""
               className="outline-none bg-transparent ml-3 border dark:border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins"
@@ -362,7 +362,7 @@ const CourseContentMedia = ({
                     onChange={(e) => setReview(e.target.value)}
                     cols={40}
                     rows={5}
-                    placeholder="Wriete your question..."
+                    placeholder="Write your question..."
                     name=""
                     id=""
                     className="outline-none bg-transparent ml-3 border border-[#ffffff57] 800px:w-full p-2 rounded w-[90%] 800px:text-[18px] font-Poppins"

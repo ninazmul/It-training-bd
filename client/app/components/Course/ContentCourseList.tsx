@@ -101,7 +101,7 @@ const ContentCourseList = (props: Props) => {
                   return (
                     <div
                       className={`w-full ${
-                        videoIndex === props.activeVideo ? "bg-slate-800" : ""
+                        videoIndex === props.activeVideo ? "bg-slate-300 dark:bg-slate-800" : ""
                       } cursor-pointer transition-all p-2`}
                       key={item._id}
                       onClick={() =>

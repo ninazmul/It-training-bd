@@ -220,7 +220,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
               <div className="mt-5">
                 {courseExistInUser ? (
                   <Link
-                    className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
+                    className="block w-full text-center py-3 px-6 bg-blue-600 text-white rounded-lg"
                     href={`/course-access/${data._id}`}
                   >
                     Enter Course

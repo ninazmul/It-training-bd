@@ -7,33 +7,22 @@ import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
 
 type Props = {
-  params: {
-    id: string;
-  };
+  params: any;
 };
 
 const Page = ({ params }: Props) => {
-  const { id } = params;
+  const id = params.id;
 
   const { isLoading, error, data } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
-    if (isLoading) return;
-
-    if (error) {
-      redirect("/");
-      return;
-    }
-
     if (data) {
-      const isPurchased = data.courses.find((item: any) => item._id === id);
-      if (!isPurchased) {
+      const isPurchased = data.data.courses?.some((item: any) => item._id === id);
+      if (!isPurchased || error) {
         redirect("/");
       }
-    } else {
-      redirect("/");
     }
-  }, [data, error, id, isLoading]);
+  }, [data, error, id]);
 
   return (
     <>
@@ -41,12 +30,7 @@ const Page = ({ params }: Props) => {
         <Loader />
       ) : (
         <div>
-          {data && (
-            <CourseContent
-              id={id}
-              user={data}
-            />
-          )}
+          <CourseContent id={id} user={data} />
         </div>
       )}
     </>
