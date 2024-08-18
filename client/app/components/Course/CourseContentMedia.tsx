@@ -81,8 +81,9 @@ const CourseContentMedia = ({
 
   const course = courseData?.course;
 
-  const isReviewExists = course?.reviews?.find(
-    (item: any) => item.user._id === user._id
+  const userId = user?.data?._id;
+  const isReviewExists = course?.reviews?.some(
+    (item: any) => item.user._id === userId
   );
 
   const handleQuestion = () => {
@@ -174,17 +175,27 @@ const CourseContentMedia = ({
 
   const handleReviewReplySubmit = () => {
     if (!replyCreationLoading) {
-      if (reply === "") {
+      if (reply.trim() === "") {
         toast.error("Reply can't be empty");
       } else {
         addReplyInReview({
           comment: reply,
           courseId: id,
           reviewId: reviewId,
-        });
+        })
+          .unwrap()
+          .then(() => {
+            setReply(""); 
+            courseRefetch(); 
+            toast.success("Reply added successfully");
+          })
+          .catch((error) => {
+            toast.error(error.data.message);
+          });
       }
     }
   };
+
 
   return (
     <div className="w-[95%] 800px:w-[86%] py-4 m-auto">
@@ -253,8 +264,8 @@ const CourseContentMedia = ({
         <div>
           {data[activeVideo]?.links.map((item: any, index: number) => (
             <div key={index} className="mb-5">
-              <h2 className="800px:text-[20px] 800px:inline-block dark:text-white text-black">
-                {item.title && item.title + " :"}
+              <h2 className="800px:text-[20px] dark:text-white text-black">
+                {item.title && `${item.title}:`}
               </h2>
               <a
                 href={item.url}
@@ -280,7 +291,7 @@ const CourseContentMedia = ({
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               cols={40}
-              rows={5} 
+              rows={5}
               placeholder="Write your question..."
               name=""
               id=""
@@ -415,7 +426,7 @@ const CourseContentMedia = ({
                       </small>
                     </div>
                   </div>
-                  {user.role === "admin" &&
+                  {user?.data?.role === "admin" &&
                     item.commentReplies.length === 0 && (
                       <span
                         className={`${styles.label} !ml-10 cursor-pointer`}
@@ -445,31 +456,35 @@ const CourseContentMedia = ({
                       </button>
                     </div>
                   )}
-                  {item.commentReplies.map((i: any, index: number) => (
-                    <div key={index} className="w-full flex 800px:ml-16 my-5">
-                      <div className="w-[50px] h-[50px]">
-                        <Image
-                          src={i.user.avatar ? i.user.avatar.url : defaultImage}
-                          width={50}
-                          height={50}
-                          alt=""
-                          className="w-[50px] h-[50px] rounded-full object-cover"
-                        />
-                      </div>
-                      <div className="pl-2">
-                        <div className="flex items-center">
-                          <h5 className="text-[20px]">{i.user.name}</h5>
-                          {i.user.role === "admin" && (
-                            <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
-                          )}
+                  {item.commentReplies?.map(
+                    (i: any, index: number) => (
+                      <div key={index} className="w-full flex 800px:ml-16 my-5">
+                        <div className="w-[50px] h-[50px]">
+                          <Image
+                            src={
+                              i.user.avatar ? i.user.avatar.url : defaultImage
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                            className="w-[50px] h-[50px] rounded-full object-cover"
+                          />
                         </div>
-                        <p>{i.comment}</p>
-                        <small className="text-[#ffffff83]">
-                          {format(i.createdAt)}
-                        </small>
+                        <div className="pl-2">
+                          <div className="flex items-center">
+                            <h5 className="text-[20px]">{i.user.name}</h5>
+                            {i.user.role === "admin" && (
+                              <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
+                            )}
+                          </div>
+                          <p>{i.comment}</p>
+                          <small className="text-[#ffffff83]">
+                            {format(i.createdAt)}
+                          </small>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               )
             )}
