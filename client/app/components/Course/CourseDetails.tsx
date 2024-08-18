@@ -12,6 +12,10 @@ import defaultImage from "../../../public/lms.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import ContentCourseList from "./ContentCourseList";
 import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
+import { redirect } from "next/navigation";
+import socketIO from "socket.io-client";
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
   data: any;
@@ -40,6 +44,14 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
 
         if (paymentResponse?.payment_url) {
           window.location.href = paymentResponse.payment_url;
+        } else if (paymentResponse?.success) {
+          socketId.emit("notification", {
+            title: "New Order",
+            message: `You have a new order from ${data.name}`,
+            userId: user._id,
+          });
+          // Redirect to course access page after successful payment
+          redirect(`/course-access/${data._id}`);
         }
       } catch (error) {
         console.error("Payment error:", error);

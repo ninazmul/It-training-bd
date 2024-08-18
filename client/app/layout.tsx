@@ -9,6 +9,9 @@ import { SessionProvider } from "next-auth/react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
 import { useState, useEffect } from "react";
+import socketIO from "socket.io-client";
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -42,15 +45,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setHydrated(true);
+    socketId.on("connection", () => {});
   }, []);
 
-  if (!hydrated) {
-    return <Loader />;
-  }
-
-  return <>{isLoading ? <Loader /> : children}</>;
+  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
 };
