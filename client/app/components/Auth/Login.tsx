@@ -62,7 +62,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
         </label>
         <input
           type="email"
-          name=""
+          name="email"
           value={values.email}
           onChange={handleChange}
           id="email"
@@ -75,7 +75,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
           <span className="text-red-500 pt-3 block">{errors.email}</span>
         )}
         <div className="w-full mt-5 relative mb-1">
-          <label className={`${styles.label}`} htmlFor="email">
+          <label className={`${styles.label}`} htmlFor="password">
             Enter your password
           </label>
           <input
@@ -83,7 +83,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
             name="password"
             value={values.password}
             onChange={handleChange}
-            id="passowrd"
+            id="password"
             placeholder="password!@"
             className={`${
               errors.password && touched.password && "border-red-500"
@@ -126,7 +126,7 @@ const Login: FC<Props> = ({ setRoute, setOpen }) => {
           />
         </div>
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
-          Not have any accout?
+          Not have any account?
           <span
             className="text-[#2190ff] pl-1 cursor-pointer"
             onClick={() => setRoute("Sign-Up")}

@@ -21,7 +21,6 @@ const Hero: FC<Props> = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("Image URL:", data?.layout?.banner?.image?.url);
       setTitle(data?.layout?.banner.title);
       setSubTitle(data?.layout?.banner.subTitle);
       setImage(data?.layout?.banner?.image?.url || null);

@@ -8,16 +8,18 @@ import { Providers } from "./Provider";
 import { SessionProvider } from "next-auth/react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import socketIO from "socket.io-client";
+
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-Poppins",
 });
+
 const josefin = Josefin_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -28,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body
-        className={`${poppins.variable} ${josefin.variable} !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300 min-h-screen`}
+        className={`${poppins.variable} ${josefin.variable} bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300 min-h-screen`}
       >
         <Providers>
           <SessionProvider>
@@ -47,8 +49,14 @@ const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
 
   useEffect(() => {
-    socketId.on("connection", () => {});
+    socket.on("connect", () => {
+      console.log("Connected with socket ID:", socket.id);
+    });
+
+    return () => {
+      socket.off("connect");
+    };
   }, []);
 
-  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+  return isLoading ? <Loader /> : <>{children}</>;
 };

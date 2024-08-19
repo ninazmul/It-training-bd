@@ -2,14 +2,21 @@ import { Server as SocketIOServer } from "socket.io";
 import http from "http";
 
 export const initSocketServer = (server: http.Server) => {
-  const io = new SocketIOServer(server);
+  const io = new SocketIOServer(server, {
+    cors: {
+      origin: "*", // Adjust this to allow specific origins
+      methods: ["GET", "POST"],
+    },
+  });
 
   io.on("connection", (socket) => {
     console.log("A user connected");
 
-    // listen for 'notification' event from the frontend
+    // Listen for 'notification' event from the frontend
     socket.on("notification", (data) => {
-      // broadcast the notification data to all connected clients (admin dashboard)
+      console.log("Received notification:", data);
+
+      // Broadcast the notification data to all connected clients (e.g., admin dashboard)
       io.emit("newNotification", data);
     });
 
@@ -17,4 +24,6 @@ export const initSocketServer = (server: http.Server) => {
       console.log("A user disconnected");
     });
   });
+
+  return io; // Return the io instance if you need it elsewhere
 };

@@ -5,6 +5,7 @@ import Heading from "../utils/Heading";
 import Header from "../components/Header";
 import { useSelector } from "react-redux";
 import Profile from "../components/profile/Profile";
+import Footer from "../components/Footer";
 
 type Props = {};
 
@@ -19,7 +20,7 @@ const Page: FC<Props> = (props) => {
       <Protected>
         <Heading
           title={`${user?.name}'s profile - IT Training BD`}
-          description="Elearning is a prlatform for student to learn and get help from teachers"
+          description="IT Training BD is a platform for student to learn and get help from teachers"
           keywords="Programming, MERN Stack, Redux, Machine Learning"
         />
         <Header
@@ -30,6 +31,7 @@ const Page: FC<Props> = (props) => {
           route={route}
         />
         <Profile user={user} />
+        <Footer />
       </Protected>
     </div>
   );

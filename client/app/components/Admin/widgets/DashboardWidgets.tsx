@@ -55,8 +55,8 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
       return;
     } else {
       if (data && ordersData) {
-        const usersLastTwoMonths = data.users.Last12Months.slice(-2);
-        const ordersLastTwoMonths = ordersData.orders.Last12Months.slice(-2);
+        const usersLastTwoMonths = data.users.last12Months.slice(-2);
+        const ordersLastTwoMonths = ordersData.orders.last12Months.slice(-2);
 
         if (
           usersLastTwoMonths.length === 2 &&
@@ -92,7 +92,7 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
   }, [isLoading, ordersLoading, data, ordersData]);
 
   return (
-    <div className="mt-[50px] h-full">
+    <div className="mt-[50px] min-h-screen">
       <div className="grid grid-cols-[75%,25%]">
         <div className="p-8">
           <UserAnalytics isDashboard={true} />

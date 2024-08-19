@@ -5,9 +5,9 @@ import { Box, IconButton, Typography } from "@mui/material";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation"; // For Next.js redirection
-import { RxAvatar } from "react-icons/rx";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import Avatar from "../../../../public/Avatar.png"
 
 // Import icons from MUI
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -24,7 +24,6 @@ import WebIcon from "@mui/icons-material/Web";
 import QuizIcon from "@mui/icons-material/Quiz";
 import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
-import SettingsIcon from "@mui/icons-material/Settings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Link from "next/link";
 
@@ -137,7 +136,7 @@ const AdminSidebar: FC = () => {
               alt="profile-user"
               width={100}
               height={100}
-              src={user.avatar ? user.avatar.url : "/default-avatar.png"}
+              src={user?.avatar?.url || Avatar}
               style={{
                 cursor: "pointer",
                 borderRadius: "50%",
@@ -146,6 +145,7 @@ const AdminSidebar: FC = () => {
               }}
             />
           </Link>
+
           <Typography
             sx={{
               marginTop: "10px",
