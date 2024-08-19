@@ -3,24 +3,37 @@ import React, { FC, useState } from "react";
 import Protected from "../hooks/useProtected";
 import Heading from "../utils/Heading";
 import Header from "../components/Header";
-import { useSelector } from "react-redux";
 import Profile from "../components/profile/Profile";
 import Footer from "../components/Footer";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import Loader from "../components/Loader/Loader";
 
 type Props = {};
 
-const Page: FC<Props> = (props) => {
+const Page: FC<Props> = () => {
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(5);
   const [route, setRoute] = useState("Login");
-  const { user } = useSelector((state: any) => state.auth);
+  const {
+    data: userData,
+    isLoading,
+    refetch,
+  } = useLoadUserQuery(undefined, {});
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!userData) {
+    return <div>No user data found</div>;
+  }
 
   return (
     <div className="min-h-screen">
       <Protected>
         <Heading
-          title={`${user?.name}'s profile - IT Training BD`}
-          description="IT Training BD is a platform for student to learn and get help from teachers"
+          title={`${userData?.name}'s profile - IT Training BD`}
+          description="IT Training BD is a platform for students to learn and get help from teachers."
           keywords="Programming, MERN Stack, Redux, Machine Learning"
         />
         <Header
@@ -30,7 +43,7 @@ const Page: FC<Props> = (props) => {
           setRoute={setRoute}
           route={route}
         />
-        <Profile user={user} />
+        <Profile user={userData} />
         <Footer />
       </Protected>
     </div>

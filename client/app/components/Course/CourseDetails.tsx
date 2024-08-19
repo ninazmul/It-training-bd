@@ -3,9 +3,7 @@ import Ratings from "@/app/utils/Ratings";
 import Link from "next/link";
 import { format } from "timeago.js";
 import React, { useEffect, useState } from "react";
-import {
-  IoMdCheckmarkCircleOutline,
-} from "react-icons/io";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Image from "next/image";
 import defaultImage from "../../../public/lms.png";
@@ -14,8 +12,9 @@ import ContentCourseList from "./ContentCourseList";
 import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
 import { redirect } from "next/navigation";
 import socketIO from "socket.io-client";
+
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
   data: any;
@@ -45,7 +44,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
         if (paymentResponse?.payment_url) {
           window.location.href = paymentResponse.payment_url;
         } else if (paymentResponse?.success) {
-          socketId.emit("notification", {
+          socket.emit("notification", {
             title: "New Order",
             message: `You have a new order from ${data.name}`,
             userId: user._id,
@@ -66,9 +65,9 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
     ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
- const courseExistInUser = user?.courses.some(
-   (course: any) => course._id === data?._id
- );
+  const courseExistInUser = user?.courses.some(
+    (course: any) => course._id === data?._id
+  );
   return (
     <div className="w-full px-4 py-5">
       <div className="w-full max-w-screen-xl mx-auto py-5">

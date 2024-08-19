@@ -11,7 +11,7 @@ import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import Verification from "./Auth/Verification";
 import Image from "next/image";
-import { RxAvatar } from "react-icons/rx";
+import Avatar from "../../public/Avatar.png";
 import { useSession } from "next-auth/react";
 import {
   useLogoutQuery,
@@ -35,7 +35,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
     data: userData,
     isLoading,
     refetch,
-  } = useLoadUserQuery(undefined, { refetchOnMountOrArgChange: true });
+  } = useLoadUserQuery(undefined, {});
   const { data } = useSession();
   const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
   const [logout, setLogout] = useState(false);
@@ -78,11 +78,10 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
 
   const handleClose = (e: any) => {
     if (e.target.id === "screen") {
-      {
-        setOpenSidebar(false);
-      }
+      setOpenSidebar(false);
     }
   };
+
   return (
     <div className="w-full relative">
       <div
@@ -114,20 +113,20 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
                 />
               </div>
               {userData ? (
-                <>
-                  <Link href={"/profile"}>
-                    <Image
-                      src={userData.avatar ? userData.avatar.url : <RxAvatar />}
-                      alt="Profile picture"
-                      width={30}
-                      height={30}
-                      className="w-[30px] h-[30px] rounded-full"
-                      style={{
-                        border: activeItem === 5 ? "2px solid #37b8ae" : "none",
-                      }}
-                    />
-                  </Link>
-                </>
+                <Link href={"/profile"}>
+                  <Image
+                    src={
+                      userData.data?.avatar ? userData.data?.avatar.url : Avatar
+                    }
+                    width={30}
+                    height={30}
+                    alt=""
+                    className="w-[30px] h-[30px] object-cover rounded-full cursor-pointer"
+                    style={{
+                      border: activeItem === 5 ? "2px solid #37a39a" : "none",
+                    }}
+                  />
+                </Link>
               ) : (
                 <HiOutlineUserCircle
                   size={25}
@@ -162,45 +161,33 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
           </div>
         )}
       </div>
-      {route === "Login" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={Login}
-              refetch={refetch}
-            />
-          )}
-        </>
+      {route === "Login" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={Login}
+          refetch={refetch}
+        />
       )}
-      {route === "Sign-Up" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={SignUp}
-            />
-          )}
-        </>
+      {route === "Sign-Up" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={SignUp}
+        />
       )}
-      {route === "Verification" && (
-        <>
-          {open && (
-            <CustomModal
-              open={open}
-              setOpen={setOpen}
-              setRoute={setRoute}
-              activeItem={activeItem}
-              component={Verification}
-            />
-          )}
-        </>
+      {route === "Verification" && open && (
+        <CustomModal
+          open={open}
+          setOpen={setOpen}
+          setRoute={setRoute}
+          activeItem={activeItem}
+          component={Verification}
+        />
       )}
     </div>
   );

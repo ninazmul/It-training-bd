@@ -49,14 +49,8 @@ const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected with socket ID:", socket.id);
-    });
-
-    return () => {
-      socket.off("connect");
-    };
+    socket.on("connection", () => {});
   }, []);
 
-  return isLoading ? <Loader /> : <>{children}</>;
+  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
 };

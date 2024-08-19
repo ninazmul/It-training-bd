@@ -8,7 +8,7 @@ import {
   useEditProfileMutation,
   useUpdateAvatarMutation,
 } from "@/redux/features/user/userApi";
-import { RxAvatar } from "react-icons/rx";
+import Avatar from "../../../public/Avatar.png";
 
 type Props = {
   avatar: string | null;
@@ -64,7 +64,9 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
             width={120}
             height={120}
             src={
-              user.avatar || avatar ? user.avatar.url || avatar : <RxAvatar />
+              user.data.avatar || avatar
+                ? user.data.avatar.url || avatar
+                : Avatar
             }
             alt=""
             className="w-[120px] h-[120px] object-cover cursor-pointer border-[3px] border-[#37a39a] rounded-full"

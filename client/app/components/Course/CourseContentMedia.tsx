@@ -15,11 +15,17 @@ import { format } from "timeago.js";
 import defaultImage from "../../../public/lms.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import Ratings from "@/app/utils/Ratings";
-import { useAddAnswerInQuestionMutation, useAddNewQuestionMutation, useAddReplyInReviewMutation, useAddReviewInCourseMutation, useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
+import {
+  useAddAnswerInQuestionMutation,
+  useAddNewQuestionMutation,
+  useAddReplyInReviewMutation,
+  useAddReviewInCourseMutation,
+  useGetCourseDetailsQuery,
+} from "@/redux/features/courses/coursesApi";
 import socketIO from "socket.io-client";
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
   data: any;
@@ -107,7 +113,7 @@ const CourseContentMedia = ({
       setQuestion("");
       refetch();
       toast.success("Question added successfully");
-      socketId.emit("notification", {
+      socket.emit("notification", {
         title: "New Question Received",
         message: `You have a new question from ${data[activeVideo].title}`,
         userId: user._id,
@@ -118,7 +124,7 @@ const CourseContentMedia = ({
       refetch();
       toast.success("Answer added successfully");
       if (user.role !== "admin") {
-        socketId.emit("notification", {
+        socket.emit("notification", {
           title: "New Question Reply Received",
           message: `You have a new question reply in ${data[activeVideo].title}`,
           userId: user._id,
@@ -130,7 +136,7 @@ const CourseContentMedia = ({
       setRating(1);
       courseRefetch();
       toast.success("Review added successfully");
-      socketId.emit("notification", {
+      socket.emit("notification", {
         title: "New Review Received",
         message: `You have a new review from ${data[activeVideo].title}`,
         userId: user._id,
@@ -205,8 +211,8 @@ const CourseContentMedia = ({
         })
           .unwrap()
           .then(() => {
-            setReply(""); 
-            courseRefetch(); 
+            setReply("");
+            courseRefetch();
             toast.success("Reply added successfully");
           })
           .catch((error) => {
@@ -215,7 +221,6 @@ const CourseContentMedia = ({
       }
     }
   };
-
 
   return (
     <div className="w-[95%] 800px:w-[86%] py-4 m-auto">
@@ -476,35 +481,31 @@ const CourseContentMedia = ({
                       </button>
                     </div>
                   )}
-                  {item.commentReplies?.map(
-                    (i: any, index: number) => (
-                      <div key={index} className="w-full flex 800px:ml-16 my-5">
-                        <div className="w-[50px] h-[50px]">
-                          <Image
-                            src={
-                              i.user.avatar ? i.user.avatar.url : defaultImage
-                            }
-                            width={50}
-                            height={50}
-                            alt=""
-                            className="w-[50px] h-[50px] rounded-full object-cover"
-                          />
-                        </div>
-                        <div className="pl-2">
-                          <div className="flex items-center">
-                            <h5 className="text-[20px]">{i.user.name}</h5>
-                            {i.user.role === "admin" && (
-                              <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
-                            )}
-                          </div>
-                          <p>{i.comment}</p>
-                          <small className="text-[#ffffff83]">
-                            {format(i.createdAt)}
-                          </small>
-                        </div>
+                  {item.commentReplies?.map((i: any, index: number) => (
+                    <div key={index} className="w-full flex 800px:ml-16 my-5">
+                      <div className="w-[50px] h-[50px]">
+                        <Image
+                          src={i.user.avatar ? i.user.avatar.url : defaultImage}
+                          width={50}
+                          height={50}
+                          alt=""
+                          className="w-[50px] h-[50px] rounded-full object-cover"
+                        />
                       </div>
-                    )
-                  )}
+                      <div className="pl-2">
+                        <div className="flex items-center">
+                          <h5 className="text-[20px]">{i.user.name}</h5>
+                          {i.user.role === "admin" && (
+                            <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
+                          )}
+                        </div>
+                        <p>{i.comment}</p>
+                        <small className="text-[#ffffff83]">
+                          {format(i.createdAt)}
+                        </small>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )
             )}

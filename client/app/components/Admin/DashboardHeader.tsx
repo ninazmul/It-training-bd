@@ -7,11 +7,11 @@ import {
 } from "@/redux/features/notifications/notificationApi";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
-import socketIO from "socket.io-client";
 import { format } from "timeago.js";
+import socketIO from "socket.io-client";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Notification = {
   _id: string;
@@ -50,13 +50,13 @@ const DashboardHeader: FC<Props> = ({ open = false, setOpen }) => {
   }, [data]);
 
   useEffect(() => {
-    socketId.on("newNotification", () => {
+    socket.on("newNotification", () => {
       refetch();
       playerNotificationSound();
     });
 
     return () => {
-      socketId.off("newNotification");
+      socket.off("newNotification");
     };
   }, [playerNotificationSound, refetch]);
 
