@@ -26,6 +26,7 @@ import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Link from "next/link";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 interface SidebarItemProps {
   title: string;
@@ -65,7 +66,11 @@ const SidebarItem: FC<SidebarItemProps> = ({
 );
 
 const AdminSidebar: FC = () => {
-  const { user } = useSelector((state: any) => state.auth);
+  const {
+    data: userData,
+    isLoading,
+    refetch,
+  } = useLoadUserQuery(undefined, {});
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const { theme } = useTheme();
@@ -136,7 +141,7 @@ const AdminSidebar: FC = () => {
               alt="profile-user"
               width={100}
               height={100}
-              src={user?.avatar?.url || Avatar}
+              src={userData.data?.avatar?.url || Avatar}
               style={{
                 cursor: "pointer",
                 borderRadius: "50%",
@@ -153,12 +158,12 @@ const AdminSidebar: FC = () => {
               color: theme === "dark" ? "#fff" : "#000",
             }}
           >
-            {user?.name}
+            {userData.data?.name}
           </Typography>
           <Typography
             sx={{ fontSize: "16px", color: theme === "dark" ? "#ddd" : "#555" }}
           >
-            - {user?.role}
+            - {userData.data?.role}
           </Typography>
         </Box>
       )}

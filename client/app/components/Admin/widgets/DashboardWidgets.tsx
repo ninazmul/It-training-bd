@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { BiBorderLeft } from "react-icons/bi";
 import { PiUsersFourLight } from "react-icons/pi";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import {
   useGetOrdersAnalyticsQuery,
   useGetUserAnalyticsQuery,
@@ -9,6 +9,7 @@ import {
 import UserAnalytics from "../analytics/UsersAnalytics";
 import OrdersAnalytics from "../analytics/OrdersAnalytics";
 import AllInvoices from "../orders/AllInvoices";
+import Loader from "../../Loader/Loader";
 
 type Props = {
   open?: boolean;
@@ -43,53 +44,58 @@ const CircularProgressWithLabel: FC<Props> = ({ open, value }) => {
 };
 
 const DashboardWidgets: FC<Props> = ({ open }) => {
-  const [orderComparePercentage, setOrderComparePercentage] = useState<any>();
-  const [userComparePercentage, setUserComparePercentage] = useState<any>();
+  const [orderComparePercentage, setOrderComparePercentage] =
+    useState<any>(null);
+  const [userComparePercentage, setUserComparePercentage] = useState<any>(null);
 
-  const { data, isLoading } = useGetUserAnalyticsQuery({});
-  const { data: ordersData, isLoading: ordersLoading } =
-    useGetOrdersAnalyticsQuery({});
+  const { data, isLoading, error } = useGetUserAnalyticsQuery({});
+  const {
+    data: ordersData,
+    isLoading: ordersLoading,
+    error: ordersError,
+  } = useGetOrdersAnalyticsQuery({});
 
   useEffect(() => {
-    if (isLoading && ordersLoading) {
-      return;
-    } else {
-      if (data && ordersData) {
-        const usersLastTwoMonths = data.users.last12Months.slice(-2);
-        const ordersLastTwoMonths = ordersData.orders.last12Months.slice(-2);
+    if (!isLoading && !ordersLoading && data && ordersData) {
+      const usersLastTwoMonths = data.users.Last12Months.slice(-2);
+      const ordersLastTwoMonths = ordersData.orders.Last12Months.slice(-2);
 
-        if (
-          usersLastTwoMonths.length === 2 &&
-          ordersLastTwoMonths.length === 2
-        ) {
-          const usersCurrentMonth = usersLastTwoMonths[1].count;
-          const usersPreviousMonth = usersLastTwoMonths[0].count;
-          const ordersCurrentMonth = ordersLastTwoMonths[1].count;
-          const ordersPreviousMonth = ordersLastTwoMonths[0].count;
+      if (usersLastTwoMonths.length === 2 && ordersLastTwoMonths.length === 2) {
+        const usersCurrentMonth = usersLastTwoMonths[1].count;
+        const usersPreviousMonth = usersLastTwoMonths[0].count;
+        const ordersCurrentMonth = ordersLastTwoMonths[1].count;
+        const ordersPreviousMonth = ordersLastTwoMonths[0].count;
 
-          const usersPercentChange =
-            ((usersCurrentMonth - usersPreviousMonth) /
-              (usersPreviousMonth === 0 ? 1 : usersPreviousMonth)) *
-            100;
-          const ordersPercentChange =
-            ((ordersCurrentMonth - ordersPreviousMonth) /
-              (ordersPreviousMonth === 0 ? 1 : ordersPreviousMonth)) *
-            100;
+        const usersPercentChange =
+          ((usersCurrentMonth - usersPreviousMonth) /
+            (usersPreviousMonth === 0 ? 1 : usersPreviousMonth)) *
+          100;
+        const ordersPercentChange =
+          ((ordersCurrentMonth - ordersPreviousMonth) /
+            (ordersPreviousMonth === 0 ? 1 : ordersPreviousMonth)) *
+          100;
 
-          setUserComparePercentage({
-            currentMonth: usersCurrentMonth,
-            previousMonth: usersPreviousMonth,
-            percentChange: usersPercentChange,
-          });
-          setOrderComparePercentage({
-            currentMonth: ordersCurrentMonth,
-            previousMonth: ordersPreviousMonth,
-            percentChange: ordersPercentChange,
-          });
-        }
+        setUserComparePercentage({
+          currentMonth: usersCurrentMonth,
+          previousMonth: usersPreviousMonth,
+          percentChange: usersPercentChange,
+        });
+        setOrderComparePercentage({
+          currentMonth: ordersCurrentMonth,
+          previousMonth: ordersPreviousMonth,
+          percentChange: ordersPercentChange,
+        });
       }
     }
   }, [isLoading, ordersLoading, data, ordersData]);
+
+  if (isLoading || ordersLoading) {
+    return <Loader />;
+  }
+
+  if (error || ordersError) {
+    return <Typography color="error">Failed to load data</Typography>;
+  }
 
   return (
     <div className="mt-[50px] min-h-screen">
@@ -101,10 +107,10 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
         <div className="pt-[80px] pr-8">
           <div className="w-full dark:bg-[#111c43] rounded-sm shadow">
             <div className="flex items-center p-5 justify-between">
-              <div className="">
+              <div>
                 <BiBorderLeft className="dark:text-[#45cba0] text-black text-[30px]" />
                 <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {orderComparePercentage?.currentMonth}
+                  {orderComparePercentage?.currentMonth || 0}
                 </h5>
                 <h5 className="pt-2 font-Poppins dark:text-[#45cba0] text-black text-[20px] font-[400]">
                   Sales Obtained
@@ -116,9 +122,10 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {orderComparePercentage?.percentChange > 0
-                    ? "+" + orderComparePercentage?.percentChange.toFixed(2)
-                    : "-" + orderComparePercentage?.percentChange.toFixed(2)}
+                  {orderComparePercentage?.percentChange
+                    ? (orderComparePercentage?.percentChange > 0 ? "+" : "-") +
+                      orderComparePercentage?.percentChange.toFixed(2)
+                    : "0"}
                   %
                 </h5>
               </div>
@@ -126,10 +133,10 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
           </div>
           <div className="w-full dark:bg-[#111c43] rounded-sm shadow my-8">
             <div className="flex items-center p-5 justify-between">
-              <div className="">
+              <div>
                 <PiUsersFourLight className="dark:text-[#45cba0] text-black text-[30px]" />
                 <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {userComparePercentage?.currentMonth}
+                  {userComparePercentage?.currentMonth || 0}
                 </h5>
                 <h5 className="pt-2 font-Poppins dark:text-[#45cba0] text-black text-[20px] font-[400]">
                   New Users
@@ -141,9 +148,10 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
                   open={open}
                 />
                 <h5 className="text-center pt-4">
-                  {userComparePercentage?.percentChange > 0
-                    ? "+" + userComparePercentage?.percentChange.toFixed(2)
-                    : "-" + userComparePercentage?.percentChange.toFixed(2)}
+                  {userComparePercentage?.percentChange
+                    ? (userComparePercentage?.percentChange > 0 ? "+" : "-") +
+                      userComparePercentage?.percentChange.toFixed(2)
+                    : "0"}
                   %
                 </h5>
               </div>

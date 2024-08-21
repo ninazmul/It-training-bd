@@ -4,7 +4,7 @@ export const courseApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllOrders: builder.query({
       query: () => ({
-        url: `get-orders`,
+        url: `get-all-orders`,
         method: "GET",
         credentials: "include",
       }),

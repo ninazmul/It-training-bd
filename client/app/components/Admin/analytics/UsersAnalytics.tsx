@@ -61,7 +61,7 @@ const UserAnalytics = ({ isDashboard }: Props) => {
                 isDashboard && "!text-[20px]"
               } px-5 !text-start`}
             >
-              User Analytitcs
+              User Analytics
             </h1>
             {!isDashboard && (
               <p className={`${styles.label} px-5`}>
