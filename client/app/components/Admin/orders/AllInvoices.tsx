@@ -34,7 +34,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
         );
         return {
           ...item,
-          userName: user?.name,
+          userName: user?.name || "Unknown", // Default to "Unknown" if the user is not found
           userEmail: user?.email,
           title: course?.name,
           price: `$${course?.price}`,
@@ -45,7 +45,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
   }, [data, usersData, coursesData]);
 
   const columns = [
-    { field: "id", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 },
+    { field: "userName", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 }, // Corrected the field name to 'userName'
     ...(isDashboard
       ? []
       : [
@@ -57,7 +57,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
       ? [{ field: "created_at", headerName: "Created At", flex: 0.5 }]
       : [
           {
-            field: " ",
+            field: "emailLink",
             headerName: "Email",
             flex: 0.2,
             renderCell: (params: any) => (
