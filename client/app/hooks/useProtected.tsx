@@ -1,13 +1,29 @@
+import React, { useEffect } from "react";
+import toast from "react-hot-toast";
+import Loader from "../components/Loader/Loader";
 import { redirect } from "next/navigation";
-import React from "react";
-import UserAuth from "./userAuth";
+import useUserAuth from "./userAuth";
 
 interface ProtectedProps {
   children: React.ReactNode;
 }
-const Protected = ({ children }: ProtectedProps) => {
-  const isAuthenticated = UserAuth();
-  return isAuthenticated ? children : redirect("/");
+
+const Protected: React.FC<ProtectedProps> = ({ children }) => {
+  const isAuthenticated = useUserAuth();
+
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      toast.error("User not authenticated!");
+      redirect("/");
+    }
+  }, [isAuthenticated]);
+
+ 
+  if (isAuthenticated === null) {
+    return <Loader />;
+  }
+
+  return <>{isAuthenticated && children}</>;
 };
 
 export default Protected;

@@ -1,11 +1,10 @@
-import { useSelector } from "react-redux";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import Loader from "../components/Loader/Loader";
 
-export default function UserAuth() {
-  const { user } = useSelector((state: any) => state.auth);
+export default function useUserAuth() {
+  const { data: userData, isLoading } = useLoadUserQuery(undefined, {});
 
-  if (user) {
-    return true;
-  } else {
-    return false;
-  }
+  if (isLoading) return <Loader />;
+
+  return Boolean(userData?.data);
 }

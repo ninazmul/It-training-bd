@@ -64,8 +64,8 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
             width={120}
             height={120}
             src={
-              user.data.avatar || avatar
-                ? user.data.avatar.url || avatar
+              user.avatar || avatar
+                ? user.avatar.url || avatar
                 : Avatar
             }
             alt=""
