@@ -70,9 +70,10 @@ const AllCourses: FC<Props> = (props) => {
       id: item._id,
       title: item.name,
       purchased: item.purchased,
-      ratings: item.ratings,
+      rating: item.ratings,
       created_at: format(item.createdAt),
     })) || [];
+  console.log(data.courses)
 
   useEffect(() => {
     if (isSuccess) {
