@@ -59,7 +59,7 @@ const CourseAnalytics = (props: Props) => {
                   <Label offset={0} position="insideBottom" />
                 </XAxis>
                 <YAxis domain={[minValue, "auto"]} />
-                <Bar dataKey="uv" fill="#3faf82">
+                <Bar dataKey="uv" fill="#ffd900">
                   <LabelList dataKey="uv" position="top" />
                 </Bar>
               </BarChart>

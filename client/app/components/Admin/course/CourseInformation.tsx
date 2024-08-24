@@ -247,7 +247,7 @@ const CourseInformation: FC<Props> = ({
           <label
             htmlFor="file"
             className={`w-full min-h-[10vh] dark:border-white border-[#00000026] p-3 border flex items-center justify-center ${
-              dragging ? "bg-blue-500" : "bg-transparent"
+              dragging ? "bg-[#ffd900]" : "bg-transparent"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -271,10 +271,12 @@ const CourseInformation: FC<Props> = ({
           <input
             type="submit"
             value="Next"
-            className="w-full 800px:w-[180px] h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+            className="w-full 800px:w-[180px] h-[40px] bg-[#ffd900] text-center text-black rounded mt-8 cursor-pointer"
           />
         </div>
       </form>
+      <br />
+      <br />
     </div>
   );
 };

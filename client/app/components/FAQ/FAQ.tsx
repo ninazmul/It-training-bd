@@ -1,4 +1,5 @@
 import { styles } from "@/app/styles/styles";
+import Heading from "@/app/utils/Heading";
 import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
 import React, { useEffect, useState } from "react";
 import { HiMinus, HiPlus } from "react-icons/hi";
@@ -24,7 +25,8 @@ const FAQ = (props: Props) => {
     <div>
       <div className="w-[90%] 800px:w-[80%] m-auto">
         <h1 className={`${styles.title} 800px:text-[40px]`}>
-          Frequently Asked Questions <span className="text-[#ffd900]">(FAQ)</span>
+          Frequently Asked Questions{" "}
+          <span className="text-[#ffd900]">(FAQ)</span>
         </h1>
         <div className="mt-12">
           <dl className="space-y-8">

@@ -3,11 +3,11 @@
 import { FC, useState, useEffect } from "react";
 import { Box, IconButton, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image";
-import { useSelector } from "react-redux";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Avatar from "../../../../public/Avatar.png";
+import logo from "../../../../public/IT logo.png";
 
 // Import icons from MUI
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -16,14 +16,12 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import GroupIcon from "@mui/icons-material/Group";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import WebIcon from "@mui/icons-material/Web";
 import QuizIcon from "@mui/icons-material/Quiz";
 import WysiwygIcon from "@mui/icons-material/Wysiwyg";
-import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Link from "next/link";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
@@ -50,11 +48,11 @@ const SidebarItem: FC<SidebarItemProps> = ({
         alignItems: "center",
         padding: "10px 20px",
         cursor: "pointer",
-        backgroundColor: selected === title ? "#6870fa" : "transparent",
-        color: selected === title ? "#fff" : "inherit",
+        backgroundColor: selected === title ? "#ffd900" : "transparent",
+        color: selected === title ? "#000" : "inherit",
         "&:hover": {
-          backgroundColor: "#888dfb",
-          color: "#fff",
+          backgroundColor: "#fdfd96",
+          color: "#000",
         },
       }}
       onClick={() => setSelected(title)}
@@ -119,12 +117,17 @@ const AdminSidebar: FC = () => {
         }}
       >
         {!isCollapsed && (
-          <Typography
-            variant="h5"
-            sx={{ color: theme === "dark" ? "#fff" : "#000" }}
-          >
-            LMS
-          </Typography>
+          <Link href={"/"}>
+            <Image
+              alt="IT Training BD Logo"
+              width={40}
+              height={40}
+              src={logo}
+              style={{
+                cursor: "pointer",
+              }}
+            />
+          </Link>
         )}
         <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
           {isCollapsed ? (
@@ -286,7 +289,7 @@ const AdminSidebar: FC = () => {
           selected={selected}
           setSelected={setSelected}
         />
-        <SidebarItem
+        {/* <SidebarItem
           title="Courses Logs"
           to="/admin/logs/courses-logs"
           icon={
@@ -296,8 +299,8 @@ const AdminSidebar: FC = () => {
           }
           selected={selected}
           setSelected={setSelected}
-        />
-        <SidebarItem
+        /> */}
+        {/* <SidebarItem
           title="Orders Logs"
           to="/admin/logs/orders-logs"
           icon={
@@ -307,8 +310,8 @@ const AdminSidebar: FC = () => {
           }
           selected={selected}
           setSelected={setSelected}
-        />
-        <SidebarItem
+        /> */}
+        {/* <SidebarItem
           title="Geo-Analytics"
           to="/admin/geo"
           icon={
@@ -318,7 +321,7 @@ const AdminSidebar: FC = () => {
           }
           selected={selected}
           setSelected={setSelected}
-        />
+        /> */}
         <Box
           onClick={logoutHandler}
           sx={{

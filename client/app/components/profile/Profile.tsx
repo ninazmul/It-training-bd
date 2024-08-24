@@ -60,7 +60,7 @@ const Profile: FC<Props> = ({ user }) => {
   return (
     <div className="flex flex-col md:flex-row w-[85%] mx-auto">
       <div
-        className={`w-full md:w-[60px] 800px:w-[310px] rounded-md shadow-xl border-b border-[#ffd900] backdrop-blur-lg bg-opacity-40 mt-[80px] mb-[80px] sticky ${
+        className={`w-full md:w-[60px] 800px:w-[310px] rounded-md shadow-xl border-b border-[#ffd900] backdrop-blur-lg bg-opacity-40 mt-4 md:mt-[80px] md:mb-[80px] md:sticky ${
           scroll ? "top-[120px]" : "top-[30px]"
         } left-[30px]`}
       >
@@ -72,7 +72,7 @@ const Profile: FC<Props> = ({ user }) => {
           logoutHandler={logoutHandler}
         />
       </div>
-      <div className="w-full h-full bg-transparent mt-[80px] md:mt-0 md:ml-4">
+      <div className="w-full h-full bg-transparent mt-[80px] md:mt-4 md:ml-4">
         {active === 1 && <ProfileInfo avatar={avatar} user={user} />}
         {active === 2 && <ChangePassword />}
         {active === 3 && (
@@ -88,6 +88,8 @@ const Profile: FC<Props> = ({ user }) => {
             You don't have any purchased courses!
           </h1>
         )}
+        <br />
+        <br />
       </div>
     </div>
   );

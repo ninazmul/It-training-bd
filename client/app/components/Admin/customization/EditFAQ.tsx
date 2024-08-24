@@ -166,12 +166,12 @@ const EditFaq = (props: Props) => {
           <div
             className={`${
               styles.button
-            } !w-[100px] !min-h-[40px] dark:text-white text-black bg-[#cccccc34]
+            } !w-[100px] !min-h-[40px] text-black bg-[#cccccc34]
             ${
               areQuestionsUnchanged(data?.layout.faq, questions) ||
               isAnyQuestionEmpty(questions)
                 ? "!cursor-not-allowed"
-                : "!cursor-pointer !bg-[#42d383]"
+                : "!cursor-pointer !bg-[#ffd900]"
             } !rounded absolute bottom-12 right-12
             `}
             onClick={

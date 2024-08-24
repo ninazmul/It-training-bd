@@ -20,21 +20,20 @@ const AllInvoices = ({ isDashboard }: Props) => {
   const { isLoading, data } = useGetAllOrdersQuery({});
   const { data: usersData } = useGetAllUsersQuery({});
   const { data: coursesData } = useGetAllCoursesQuery({});
-
-  const [orderData, setOrderData] = useState<any>([]);
+  const [orderData, setOrderData] = useState<any[]>([]);
 
   useEffect(() => {
     if (data?.orders && usersData?.users && coursesData?.courses) {
-      const temp = data.orders.map((item: any) => {
+      const temp = data.orders.map((order: any) => {
         const user = usersData.users.find(
-          (user: any) => user._id === item.userId
+          (user: any) => user._id === order.userId
         );
         const course = coursesData.courses.find(
-          (course: any) => course._id === item.courseId
+          (course: any) => course._id === order.courseId
         );
         return {
-          ...item,
-          userName: user?.name || "Unknown", // Default to "Unknown" if the user is not found
+          ...order,
+          userName: user?.name || "Unknown", // Fallback to "Unknown" if the user is not found
           userEmail: user?.email,
           title: course?.name,
           price: `$${course?.price}`,
@@ -45,7 +44,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
   }, [data, usersData, coursesData]);
 
   const columns = [
-    { field: "userName", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 }, // Corrected the field name to 'userName'
+    { field: "userName", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 },
     ...(isDashboard
       ? []
       : [
@@ -63,7 +62,9 @@ const AllInvoices = ({ isDashboard }: Props) => {
             renderCell: (params: any) => (
               <a href={`mailto:${params.row.userEmail}`}>
                 <AiOutlineMail
-                  className="dark:text-white mt-4 text-black"
+                  className={`mt-4 ${
+                    theme === "dark" ? "text-white" : "text-black"
+                  }`}
                   size={20}
                 />
               </a>
@@ -72,13 +73,13 @@ const AllInvoices = ({ isDashboard }: Props) => {
         ]),
   ];
 
-  const rows = orderData.map((item: any) => ({
-    id: item._id,
-    userName: item.userName,
-    userEmail: item.userEmail,
-    title: item.title,
-    price: item.price,
-    created_at: format(item.createdAt),
+  const rows = orderData.map((order: any) => ({
+    id: order._id,
+    userName: order.userName,
+    userEmail: order.userEmail,
+    title: order.title,
+    price: order.price,
+    created_at: format(order.createdAt),
   }));
 
   return (

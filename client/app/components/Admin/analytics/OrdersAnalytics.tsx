@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   ResponsiveContainer,
   XAxis,
@@ -11,35 +11,7 @@ import {
   Line,
 } from "recharts";
 import { useGetOrdersAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
-import { styles } from "@/app/styles/styles";
 import Loader from "../../Loader/Loader";
-
-// const analyticsData = [
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-//   {
-//     name: "Page A",
-//     Count: 4000,
-//   },
-// ];
 
 type Props = {
   isDashboard?: boolean;
@@ -47,13 +19,11 @@ type Props = {
 
 const OrdersAnalytics = ({ isDashboard }: Props) => {
   const { data, isLoading } = useGetOrdersAnalyticsQuery({});
-
-  const analyticsData: any = [];
-
-  data &&
-    data.orders.Last12Months?.forEach((item: any) => {
-      analyticsData.push({ name: item.name, Count: item.count });
-    });
+  const analyticsData =
+    data?.orders?.Last12Months?.map((item: any) => ({
+      name: item.name,
+      Count: item.count,
+    })) || [];
 
   return (
     <>
@@ -61,17 +31,17 @@ const OrdersAnalytics = ({ isDashboard }: Props) => {
         <Loader />
       ) : (
         <div className={isDashboard ? "h-[30vh]" : "h-screen"}>
-          <div className={isDashboard ? "mt-[0px] pl-[40px] mb-2" : "mt-[50px"}>
+          <div className={isDashboard ? "mt-0 pl-10 mb-2" : "mt-12 pl-5"}>
             <h1
-              className={`${styles.title} ${
-                isDashboard && "!text-[20px]"
-              } px-5 !text-start`}
+              className={`text-2xl font-semibold ${
+                isDashboard && "!text-lg"
+              } text-gray-900 dark:text-white`}
             >
               Orders Analytics
             </h1>
             {!isDashboard && (
-              <p className={`${styles.label} px-5`}>
-                Last 12 onths analytics data
+              <p className="text-lg text-gray-500 dark:text-gray-400">
+                Last 12 months analytics data
               </p>
             )}
           </div>
@@ -85,8 +55,6 @@ const OrdersAnalytics = ({ isDashboard }: Props) => {
               height={isDashboard ? "100%" : "50%"}
             >
               <LineChart
-                width={500}
-                height={300}
                 data={analyticsData}
                 margin={{
                   top: 5,
@@ -100,7 +68,7 @@ const OrdersAnalytics = ({ isDashboard }: Props) => {
                 <YAxis />
                 <Tooltip />
                 {!isDashboard && <Legend />}
-                <Line type="monotone" dataKey="Count" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="Count" stroke="#ffd900" />
               </LineChart>
             </ResponsiveContainer>
           </div>

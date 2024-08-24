@@ -35,7 +35,7 @@ const CoursePreview: FC<Props> = ({
   };
 
   return (
-    <div className="w-[80%] mt-24 py-5 m-auto mb-5">
+    <div className="w-[80%] mt-24 py-5 m-auto mb-5 text-black dark:text-white">
       <div className="w-full relative">
         <CoursePlayer
           videoUrl={courseData?.demoUrl}
@@ -59,7 +59,8 @@ const CoursePreview: FC<Props> = ({
         <div
           className={`${styles.button} !w-[180px] my-3 font-Poppins !bg-[crimson] cursor-not-allowed`}
         >
-          Buy Now {courseData?.price ? (courseData.estimatedPrice): (courseData.price)}$
+          Buy Now{" "}
+          {courseData?.price ? courseData.estimatedPrice : courseData.price}$
         </div>
       </div>
 
@@ -72,7 +73,7 @@ const CoursePreview: FC<Props> = ({
           className={`${styles.input} 1500px:!w-[50%] 1100px:w-[60%] ml-3 !mt-0`}
         />
         <div
-          className={`${styles.button} !w-[120px] my-3 ml-4 font-Poppins cursor-pointer`}
+          className={`${styles.button} bg-[#ffd900] text-black !w-[120px] my-3 ml-4 font-Poppins cursor-pointer`}
         >
           Apply
         </div>
@@ -136,13 +137,13 @@ const CoursePreview: FC<Props> = ({
       </div>
       <div className="w-full flex items-center justify-between">
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#ffd900] text-center text-black rounded mt-8 cursor-pointer"
           onClick={() => prevButton()}
         >
           Prev
         </div>
         <div
-          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+          className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#ffd900] text-center text-black rounded mt-8 cursor-pointer"
           onClick={() => createCourse()}
         >
           {isEdit ? "Update" : "Create"}

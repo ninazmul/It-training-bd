@@ -143,7 +143,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
             onClick={handleCloseSidebar}
             id="screen"
           >
-            <div className="fixed z-[9999999999] w-[69%] h-screen top-0 right-0 bg-white dark:bg-slate-900 dark:bg-opacity-90">
+            <div className="fixed z-[9999999999] w-[69%] h-screen top-0 right-0 bg-white dark:bg-gradient-to-b dark:from-[#0d0141] dark:to-[#0d0523] dark:bg-opacity-90">
               <NavItems activeItem={activeItem} isMobile={true} />
               <HiOutlineUserCircle
                 size={25}

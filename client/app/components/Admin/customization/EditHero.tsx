@@ -103,12 +103,12 @@ const EditHero: FC<Props> = (props: Props) => {
         <div
           className={`${
             styles.button
-          } !w-[100px] !min-h-[40px] !h-[40px] dark:text-white text-black bg-[#cccccc34]
+          } !w-[100px] !min-h-[40px] !h-[40px] text-black bg-[#cccccc34]
             ${
               data?.layout?.banner?.title !== title ||
               data?.layout?.banner?.subTitle !== subTitle ||
               data?.layout?.banner?.image !== image
-                ? "!cursor-pointer !bg-[#42d383]"
+                ? "!cursor-pointer !bg-[#ffd900]"
                 : "!cursor-not-allowed"
             }
             !rounded absolute bottom-12 right-12`}

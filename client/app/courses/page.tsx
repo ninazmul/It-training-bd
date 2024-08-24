@@ -69,7 +69,7 @@ const Page = (props: Props) => {
             <div className="w-full flex items-center flex-wrap">
               <div
                 className={`h-[35px] ${
-                  category === "All" ? "bg-[#ffd900]" : "bg-[#5050cb]"
+                  category === "All" ? "bg-[#ffd900] text-black" : "bg-[#5050cb]"
                 } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
                 onClick={() => setCategory("All")}
               >
