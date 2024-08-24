@@ -31,37 +31,6 @@ const Footer = (props: Props) => {
           </div>
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-black dark:text-white">
-              About
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/about"
-                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
-                >
-                  Our Story
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/policy"
-                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/faq"
-                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
-                >
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-black dark:text-white">
               Quick Links
             </h3>
             <ul className="space-y-2">
@@ -87,6 +56,37 @@ const Footer = (props: Props) => {
                   className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
                 >
                   My Account
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-black dark:text-white">
+              About
+            </h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/about"
+                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                >
+                  Our Story
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/policy"
+                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/faq"
+                  className="text-base text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                >
+                  FAQ
                 </Link>
               </li>
             </ul>
