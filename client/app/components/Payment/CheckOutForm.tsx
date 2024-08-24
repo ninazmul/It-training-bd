@@ -1,87 +1,173 @@
-import { styles } from "@/app/styles/styles";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useCreateOrderMutation } from "@/redux/features/orders/orderApi";
-import {
-  LinkAuthenticationElement,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js";
-import { redirect } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import socketIO from "socket.io-client";
 import toast from "react-hot-toast";
 
-type Props = {
-  setOpen: any;
-  data: any;
-  user: any;
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+
+type FormData = {
+  name: string;
+  email: string;
+  phone: string;
+  transactionId: string;
+  courseId: string;
 };
 
-const CheckOutForm = ({ setOpen, data, user }: Props) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [message, setMessage] = useState<string | null>(null);
-  const [createOrder, { data: orderData, error }] = useCreateOrderMutation();
-  const [loadUser, setLoadUser] = useState(false);
-  const {} = useLoadUserQuery({ skip: loadUser ? false : true });
-  const [isLoading, setIsLoading] = useState(false);
+type Props = {
+  setOpen: (open: boolean) => void;
+  data: { _id: string; courseId: string };
+  user: {
+    name: string;
+    email: string;
+    _id: string;
+    courses: { _id: string }[];
+  };
+};
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    if (!stripe || !elements) {
+const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitted },
+  } = useForm<FormData>({
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: "",
+      transactionId: "",
+      courseId: data?.courseId || "",
+    },
+  });
+
+  const [createOrder, { isLoading }] = useCreateOrderMutation();
+
+  useEffect(() => {
+    const alreadyEnrolled = user.courses.some(
+      (course) => course._id === data?.courseId
+    );
+
+    if (alreadyEnrolled) {
+      toast.error("You are already enrolled in this course.");
+    }
+  }, [user.courses, data?.courseId]);
+
+  const onSubmit = async (formData: FormData) => {
+    if (Object.keys(errors).length > 0) {
+      toast.error("Please fill in all required fields.");
       return;
     }
-    setIsLoading(true);
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      redirect: "if_required",
-    });
 
-    if (error) {
-        setMessage(error.message || "An unknown error occurred.");
-        setIsLoading(false);
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        createOrder({ courseId: data._id, payment_info: paymentIntent });
+    try {
+      const response = await createOrder({
+        courseId: data._id,
+        payment_info: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          transactionId: formData.transactionId,
+        },
+      }).unwrap();
+
+      if (!response.success) {
+        throw new Error("Failed to submit order");
+      }
+
+      socket.emit("notification", {
+        title: "New Order",
+        message: `You have a new order from ${formData.name}`,
+        userId: user._id,
+      });
+
+      toast.success("Order submitted successfully!");
+      reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("Order Submission Error:", error);
+      toast.error("An error occurred: " + (error as Error).message);
     }
   };
 
-  useEffect(() => {
-    if (orderData) {
-      setIsLoading(false);
-      setLoadUser(true);
-      redirect(`/course-access/${data._id}`);
-    }
-
-    if (error) {
-      setIsLoading(false);
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
-      }
-    }
-  }, [orderData, error, data._id]);
-
-  if (!stripe || !elements) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <form id="payment-form" onSubmit={handleSubmit}>
-      <LinkAuthenticationElement id="link-authentication-element" />
-      <PaymentElement id="payment-element" />
-      <button disabled={isLoading || !stripe || !elements} id="submit">
-        <span id="button-text" className={`${styles.button} mt-2 !h-[35px]`}>
-          {isLoading ? "Paying..." : "Pay now"}
-        </span>
-      </button>
-      {message && (
-        <div id="payment-message" className="text-[red] font-Poopins pt-2">
-          {message}
+    <div className="my-4 rounded-lg shadow-lg max-w-md mx-auto text-black dark:text-white">
+      <h2 className="text-2xl font-semibold mb-6 text-center">
+        Payment method
+      </h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="block font-medium mb-2">
+            Name
+            <input
+              {...register("name", { required: true })}
+              className={`mt-1 block w-full p-2 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm">Name is required</p>
+            )}
+          </label>
         </div>
-      )}
-    </form>
+        <div>
+          <label className="block font-medium mb-2">
+            Email
+            <input
+              type="email"
+              {...register("email", { required: true })}
+              className={`mt-1 block w-full p-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your email"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">Email is required</p>
+            )}
+          </label>
+        </div>
+        <div>
+          <label className="block font-medium mb-2">
+            Phone
+            <input
+              type="tel"
+              {...register("phone", { required: true })}
+              className={`mt-1 block w-full p-2 border ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your phone number"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm">Phone number is required</p>
+            )}
+          </label>
+        </div>
+        <div>
+          <label className="block font-medium mb-2">
+            Transaction ID
+            <input
+              {...register("transactionId", { required: true })}
+              className={`mt-1 block w-full p-2 border ${
+                errors.transactionId ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter the transaction ID"
+            />
+            {errors.transactionId && (
+              <p className="text-red-500 text-sm">Transaction ID is required</p>
+            )}
+          </label>
+        </div>
+        <button
+          type="submit"
+          disabled={isLoading || isSubmitted}
+          className="w-full py-2 px-4 bg-[#ffd900] text-black font-semibold rounded-md hover:bg-[#ffae00] transition duration-200"
+        >
+          {isLoading ? "Submitting..." : "Submit"}
+        </button>
+      </form>
+    </div>
   );
 };
-
 
 export default CheckOutForm;

@@ -232,7 +232,7 @@ const CourseContentMedia = ({
         <div
           className={`${
             styles.button
-          } text-white !w-[unset] !min-h-[40px] !py-[unset] ${
+          } text-black !w-[unset] !min-h-[40px] !py-[unset] bg-[#ffd900] ${
             activeVideo === 0 && "!cursor-no-drop opacity-[.8]"
           }`}
           onClick={() =>
@@ -245,7 +245,7 @@ const CourseContentMedia = ({
         <div
           className={`${
             styles.button
-          } text-white !w-[unset] !min-h-[40px] !py-[unset] ${
+          } text-black bg-[#ffd900] !w-[unset] !min-h-[40px] !py-[unset] ${
             data.length - 1 === activeVideo && "!cursor-no-drop opacity-[.8]"
           }`}
           onClick={() =>
@@ -270,7 +270,7 @@ const CourseContentMedia = ({
             key={index}
             className={`800px:text-[20px] cursor-pointer ${
               activeBar === index
-                ? "text-red-500"
+                ? "text-[#ffd900]"
                 : "text-black dark:text-white"
             }`}
             onClick={() => setActiveBar(index)}
@@ -327,7 +327,7 @@ const CourseContentMedia = ({
             <div
               className={`${
                 styles.button
-              } !w-[120px] !h-[40px] text-[18px] mt-5 ${
+              } !w-[120px] !h-[40px] text-[18px] mt-5 bg-[#ffd900] text-black ${
                 questionCreationLoading && "cursor-not-allowed"
               }`}
               onClick={questionCreationLoading ? () => {} : handleQuestion}
@@ -409,7 +409,7 @@ const CourseContentMedia = ({
                 <div
                   className={`${
                     styles.button
-                  } !w-[120px] !h-[40px] text-[18px] mt-5 ${
+                  } !w-[120px] !h-[40px] text-[18px] mt-5 bg-[#ffd900] text-black ${
                     reviewCreationLoading && "cursor-no-drop"
                   }`}
                   onClick={

@@ -56,7 +56,7 @@ const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
   const { errors, touched, values, handleChange, handleSubmit } = formik;
 
   return (
-    <div className="w-full">
+    <div className="w-full text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
       <h1 className={`${styles.title}`}>Login With IT Training BD</h1>
       <form onSubmit={handleSubmit}>
         <label className={`${styles.label}`} htmlFor="email">
@@ -109,7 +109,11 @@ const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
           <span className="text-red-500 pt-3 block">{errors.password}</span>
         )}
         <div className="w-full mt-5">
-          <input type="submit" value="Login" className={`${styles.button}`} />
+          <input
+            type="submit"
+            value="Login"
+            className={`${styles.button} text-black bg-[#ffd900]`}
+          />
         </div>
         <br />
         <h5 className="text-center pt-4 font-Poopins text-[14px] text-black dark:text-white">
@@ -130,7 +134,7 @@ const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
         <h5 className="text-center pt-4 font-Poppins text-[14px]">
           Not have any account?
           <span
-            className="text-[#2190ff] pl-1 cursor-pointer"
+            className="text-[#ffd900] pl-1 cursor-pointer"
             onClick={() => setRoute("Sign-Up")}
           >
             Sign up

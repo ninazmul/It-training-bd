@@ -15,16 +15,18 @@ export const courseApi = apiSlice.injectEndpoints({
         method: "POST",
         body: {
           courseId,
-          payment_info,
+          name: payment_info.name,
+          email: payment_info.email,
+          phone: payment_info.phone,
+          transactionId: payment_info.transactionId,
         },
         credentials: "include",
       }),
     }),
-    createPayment: builder.mutation({
-      query: (data) => ({
-        url: "payment",
-        method: "POST",
-        body: data,
+    getOrdersWithMinimalInfo: builder.query({
+      query: () => ({
+        url: `minimal-info`,
+        method: "GET",
         credentials: "include",
       }),
     }),
@@ -33,6 +35,6 @@ export const courseApi = apiSlice.injectEndpoints({
 
 export const {
   useGetAllOrdersQuery,
-  useCreatePaymentMutation,
   useCreateOrderMutation,
+  useGetOrdersWithMinimalInfoQuery,
 } = courseApi;

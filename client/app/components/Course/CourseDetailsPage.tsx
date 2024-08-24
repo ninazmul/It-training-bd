@@ -5,9 +5,9 @@ import Heading from "@/app/utils/Heading";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
-import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
 import Loader from "../Loader/Loader";
 import CourseDetails from "./CourseDetails";
+import { useCreateOrderMutation } from "@/redux/features/orders/orderApi";
 
 type Props = {
   id: string;
@@ -17,37 +17,45 @@ const CourseDetailsPage = ({ id }: Props) => {
   const [route, setRoute] = useState("Login");
   const [open, setOpen] = useState(false);
   const { data, isLoading } = useGetCourseDetailsQuery(id);
-  const [createPayment, { data: paymentResponse }] = useCreatePaymentMutation();
+  const [createOrder, { data: orderResponse, isLoading: isOrderLoading }] =
+    useCreateOrderMutation();
   const [paymentUrl, setPaymentUrl] = useState("");
 
   useEffect(() => {
     if (data) {
-      const amount = Math.round(data.course.price); // SSLCommerz expects the amount in integer
-      createPayment({ amount });
+      createOrder({
+        courseId: data.course._id,
+        payment_info: {
+          name: "User Name", // Adjust this as needed
+          email: "user@example.com", // Adjust this as needed
+          phone: "1234567890", // Adjust this as needed
+          transactionId: "",
+        },
+      });
     }
-  }, [data]);
+  }, [data, createOrder]);
 
   useEffect(() => {
-    if (paymentResponse?.payment_url) {
-      setPaymentUrl(paymentResponse.payment_url);
+    if (orderResponse?.payment_url) {
+      setPaymentUrl(orderResponse.payment_url);
       // Redirect to the payment URL
       if (paymentUrl) {
         window.location.href = paymentUrl;
       }
     }
-  }, [paymentResponse, paymentUrl]);
+  }, [orderResponse, paymentUrl]);
 
   return (
     <>
-      {isLoading ? (
+      {isLoading || isOrderLoading ? (
         <Loader />
       ) : (
         <>
           <div>
             <Heading
-              title={data.course.name + " - IT Training BD"}
+              title={data?.course.name + " - IT Training BD"}
               description="LMS is a platform for students to learn and get help from teachers"
-              keywords={data.course.tags}
+              keywords={data?.course.tags || []}
             />
             <Header
               open={open}

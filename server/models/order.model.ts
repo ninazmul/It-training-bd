@@ -1,33 +1,54 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+// Define Payment Info Interface
 export interface IPaymentInfo {
-  transaction_id?: string; 
+  transaction_id?: string;
 }
 
-export interface IOrder extends Document {
-  courseId: string;
+// Define the Item Interface
+interface IOrderItem {
+  productId: string;
+  quantity: number;
+  price: number;
+}
+
+// Define Order Interface
+export interface IOrderData {
   userId: string;
-  payment_info?: IPaymentInfo;
+  items: IOrderItem[];
+  totalAmount: number;
+  isPaid: boolean;
+  paymentMethod: string;
+  paymentInfo?: IPaymentInfo;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export const OrderSchema = new Schema<IOrder>(
+// Define Order Schema
+const OrderSchema: Schema<IOrderData> = new Schema(
   {
-    courseId: {
-      type: String,
-      required: true,
-    },
-    userId: {
-      type: String,
-      required: true,
-    },
-    payment_info: {
-      type: Map,
-      of: Schema.Types.Mixed,
+    userId: { type: String, required: true },
+    items: [
+      {
+        productId: { type: String, required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+      },
+    ],
+    totalAmount: { type: Number, required: true },
+    isPaid: { type: Boolean, default: false },
+    paymentMethod: { type: String, required: true },
+    paymentInfo: {
+      transaction_id: { type: String, default: null },
     },
   },
   { timestamps: true }
 );
 
-const OrderModel: Model<IOrder> = mongoose.model("Order", OrderSchema);
+// Create the Order Model
+const OrderModel: Model<IOrderData> = mongoose.model<IOrderData>(
+  "Order",
+  OrderSchema
+);
 
 export default OrderModel;

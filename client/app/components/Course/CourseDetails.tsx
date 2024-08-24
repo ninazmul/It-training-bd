@@ -3,18 +3,17 @@ import Ratings from "@/app/utils/Ratings";
 import Link from "next/link";
 import { format } from "timeago.js";
 import React, { useEffect, useState } from "react";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import {
+  IoMdCheckmarkCircleOutline,
+  IoMdCloseCircleOutline,
+} from "react-icons/io";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Image from "next/image";
 import defaultImage from "../../../public/lms.png";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import ContentCourseList from "./ContentCourseList";
-import { useCreatePaymentMutation } from "@/redux/features/orders/orderApi";
-import { redirect } from "next/navigation";
-import socketIO from "socket.io-client";
-
-const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+import CheckOutForm from "../Payment/CheckOutForm";
+import { useGetOrdersWithMinimalInfoQuery } from "@/redux/features/orders/orderApi";
 
 type Props = {
   data: any;
@@ -23,9 +22,10 @@ type Props = {
 };
 
 const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
-  const [createPayment] = useCreatePaymentMutation();
   const { data: userData } = useLoadUserQuery(undefined, {});
   const [user, setUser] = useState<any>();
+  const [open, setOpen] = useState(false);
+  const { data: ordersData } = useGetOrdersWithMinimalInfoQuery(undefined, {});
 
   useEffect(() => {
     if (userData?.success && userData?.data) {
@@ -33,28 +33,9 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
     }
   }, [userData]);
 
-  const handleOrder = async () => {
+  const handleOrder = () => {
     if (user) {
-      try {
-        const paymentResponse = await createPayment({
-          amount: data.estimatedPrice || data.price,
-          courseId: data._id,
-        }).unwrap();
-
-        if (paymentResponse?.payment_url) {
-          window.location.href = paymentResponse.payment_url;
-        } else if (paymentResponse?.success) {
-          socket.emit("notification", {
-            title: "New Order",
-            message: `You have a new order from ${data.name}`,
-            userId: user._id,
-          });
-          // Redirect to course access page after successful payment
-          redirect(`/course-access/${data._id}`);
-        }
-      } catch (error) {
-        console.error("Payment error:", error);
-      }
+      setOpen(true);
     } else {
       setRoute("Login");
       openAuthModal(true);
@@ -65,9 +46,27 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
     ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
+  // Check if the course exists in user's courses
   const courseExistInUser = user?.courses.some(
     (course: any) => course._id === data?._id
   );
+
+  // Assuming userData.data.courses is an array with at least one item
+  const courses = userData?.data.courses;
+  let courseId = null;
+  if (courses && courses.length > 0) {
+    courseId = courses[0]._id;
+  } else {
+    console.log("No courses available.");
+  }
+
+  const orderForCourse = ordersData?.orders?.find((order: any) =>
+    order.items.some((item: any) => item.productId === data._id)
+  );
+
+  const isCoursePaid = orderForCourse?.isPaid;
+  const isOrderAvailable = !!orderForCourse;
+
   return (
     <div className="w-full px-4 py-5">
       <div className="w-full max-w-screen-xl mx-auto py-5">
@@ -138,7 +137,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
             </div>
 
             <div className="mt-5">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center my-4">
                 <Ratings rating={data?.ratings} />
                 <h5 className="mt-2 sm:mt-0 sm:ml-3 text-xl font-semibold text-black dark:text-white">
                   {data?.ratings.toFixed(1)} Course Rating *{" "}
@@ -148,58 +147,64 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
 
               {(data?.reviews && [...data.reviews].reverse()).map(
                 (item: any, index: number) => (
-                  <div className="mt-5" key={index}>
-                    <div className="flex items-center">
-                      <Image
-                        src={
-                          item.user.avatar ? item.user.avatar.url : defaultImage
-                        }
-                        width={50}
-                        height={50}
-                        alt=""
-                        className="rounded-full object-cover"
-                      />
-                      <div className="ml-3">
-                        <h5 className="text-lg font-medium text-black dark:text-white">
-                          {item.user.name}
-                        </h5>
-                        <Ratings rating={item.rating} />
-                        <p className="mt-2 text-black dark:text-white">
-                          {item.comment}
-                        </p>
-                        <small className="text-gray-600 dark:text-gray-400">
-                          {format(item.createdAt)}
-                        </small>
-                      </div>
-                    </div>
-
-                    {item.commentReplies.map((reply: any, index: number) => (
-                      <div className="flex mt-5 pl-12" key={index}>
+                  <div className="w-full pb-4" key={index}>
+                    <div className="flex">
+                      <div className="w-[50px] h-[50px]">
                         <Image
                           src={
-                            reply.user.avatar
-                              ? reply.user.avatar.url
+                            item.user.avatar
+                              ? item.user.avatar.url
                               : defaultImage
                           }
                           width={50}
                           height={50}
                           alt=""
-                          className="rounded-full object-cover"
+                          className="w-[50px] h-[50px] rounded-full object-cover"
                         />
-                        <div className="ml-3">
+                      </div>
+                      <div className="hidden 800px:block pl-2">
+                        <div className="flex items-center">
+                          <h5 className="text-[18px] pr-2 text-black dark:text-white">
+                            {item.user.name}
+                          </h5>
+                          <Ratings rating={item.rating} />
+                        </div>
+                        <p className="text-black dark:text-white">
+                          {item.comment}
+                        </p>
+                        <small className="text-[#000000d1] dark:text-[#ffffff83]">
+                          {format(item.createdAt)}
+                        </small>
+                      </div>
+                      <div className="pl-2 flex 800px:hidden items-center">
+                        <h5 className="text-[18px] pr-2 text-black dark:text-white">
+                          <Ratings rating={item.rating} />
+                        </h5>
+                      </div>
+                    </div>
+                    {item.commentReplies.map((i: any, index: number) => (
+                      <div className="w-full flex 800px:ml-16 my-5" key={index}>
+                        <div className="w-[50px] h-[50px]">
+                          <Image
+                            src={
+                              i.user.avatar ? i.user.avatar.url : defaultImage
+                            }
+                            width={50}
+                            height={50}
+                            alt=""
+                            className="w-[50px] h-[50px] rounded-full object-cover"
+                          />
+                        </div>
+                        <div className="pl-2">
                           <div className="flex items-center">
-                            <h5 className="text-lg font-medium text-black dark:text-white">
-                              {reply.user.name}
-                            </h5>
-                            {reply.user.role === "admin" && (
-                              <VscVerifiedFilled className="text-blue-500 ml-2" />
+                            <h5 className="text-[20px]">{i.user.name}</h5>
+                            {i.user.role === "admin" && (
+                              <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
                             )}
                           </div>
-                          <p className="mt-1 text-black dark:text-white">
-                            {reply.comment}
-                          </p>
-                          <small className="text-gray-600 dark:text-gray-400">
-                            {format(reply.createdAt)}
+                          <p>{i.comment}</p>
+                          <small className="text-[#ffffff83]">
+                            {format(i.createdAt)}
                           </small>
                         </div>
                       </div>
@@ -230,18 +235,24 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
 
               <div className="mt-5">
                 {courseExistInUser ? (
-                  <Link
-                    className="block w-full text-center py-3 px-6 bg-blue-600 text-white rounded-lg"
-                    href={`/course-access/${data._id}`}
-                  >
-                    Enter Course
-                  </Link>
+                  isCoursePaid ? (
+                    <Link
+                      className="block w-full text-center py-3 px-4 bg-[#ffd900] text-black font-medium rounded-lg"
+                      href={`/course-access/${data._id}`}
+                    >
+                      Enter Course
+                    </Link>
+                  ) : (
+                    <button className="block w-full text-center py-3 px-4 bg-red-500 text-white font-medium rounded-lg">
+                      Waiting for Payment
+                    </button>
+                  )
                 ) : (
                   <button
-                    className="block w-full text-center py-3 px-6 bg-red-600 text-white rounded-lg"
                     onClick={handleOrder}
+                    className="block w-full text-center py-3 px-4 bg-green-600 text-white font-medium rounded-lg"
                   >
-                    Buy Now
+                    {isOrderAvailable ? "Order Now" : "Enroll Now"}
                   </button>
                 )}
               </div>
@@ -256,6 +267,24 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
           </div>
         </div>
       </div>
+      <>
+        {open && (
+          <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
+            <div className="w-[500px] min-h-[420px] dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl rounded-xl p-3">
+              <div className="w-full flex justify-end">
+                <IoMdCloseCircleOutline
+                  size={40}
+                  className="text-black dark:text-white cursor-pointer"
+                  onClick={() => setOpen(false)}
+                />
+              </div>
+              <div className="w-full">
+                <CheckOutForm setOpen={setOpen} data={data} user={user} />
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     </div>
   );
 };

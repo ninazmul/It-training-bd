@@ -101,7 +101,9 @@ const ContentCourseList = (props: Props) => {
                   return (
                     <div
                       className={`w-full ${
-                        videoIndex === props.activeVideo ? "bg-slate-300 dark:bg-slate-800" : ""
+                        videoIndex === props.activeVideo
+                          ? "bg-slate-300 dark:bg-slate-800"
+                          : ""
                       } cursor-pointer transition-all p-2`}
                       key={item._id}
                       onClick={() =>
@@ -113,7 +115,7 @@ const ContentCourseList = (props: Props) => {
                           <MdOutlineOndemandVideo
                             size={25}
                             className="mr-2"
-                            color="#1cdada"
+                            color="#ffd900"
                           />
                         </div>
                         <h1 className="text-[18px] inline-block break-words text-black dark:text-white">

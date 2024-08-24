@@ -76,11 +76,11 @@ const Verification: FC<Props> = ({ setRoute }) => {
   };
 
   return (
-    <div>
+    <div className="text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
       <h1 className={`${styles.title}`}>Verify your Account</h1>
       <br />
       <div className="w-full flex items-center justify-center mt-2">
-        <div className="w-[80px] h-[80px] rounded-full bg-[#497DF2] flex items-center justify-center">
+        <div className="w-[80px] h-[80px] rounded-full bg-[#ffd900] flex items-center justify-center">
           <VscWorkspaceTrusted size={40} />
         </div>
       </div>
@@ -115,7 +115,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
       <h5 className="text-center pt-4 font-Poppins text-[14px] text-black dark:text-white">
         Go back to sign in?
         <span
-          className="text-[#2190ff] pl-1 cursor-pointer"
+          className="text-[#ffd900] pl-1 cursor-pointer"
           onClick={() => setRoute("Login")}
         >
           Sign in

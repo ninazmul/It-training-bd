@@ -3,7 +3,7 @@ import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import {
   createOrder,
   getAllOrdersForAdmin,
-  newPayment,
+  getOrdersWithMinimalInfoController
 } from "../controllers/order.controller";
 
 const orderRouter = express.Router();
@@ -17,6 +17,8 @@ orderRouter.get(
   getAllOrdersForAdmin
 );
 
-orderRouter.post("/payment", isAuthenticated, newPayment);
+orderRouter.get("/minimal-info", isAuthenticated, getOrdersWithMinimalInfoController);
+
+// orderRouter.post("/submit-payment", isAuthenticated, newPayment);
 
 export default orderRouter;
