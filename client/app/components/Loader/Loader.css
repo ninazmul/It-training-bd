@@ -32,12 +32,12 @@
 
 .loader span:nth-child(1) {
   color: transparent;
-  -webkit-text-stroke: 0.3px #19cec6;
+  -webkit-text-stroke: 0.3px #ffd900;
 }
 
 .loader span:nth-child(2) {
-  color: #19cec6;
-  -webkit-text-stroke: 1px #19cec6;
+  color: #ffd900;
+  -webkit-text-stroke: 1px #ffd900;
   animation: uiverse723 3s ease-in-out infinite;
 }
 

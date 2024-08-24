@@ -17,7 +17,7 @@ const Courses = (props: Props) => {
       <div className={`w-[90%] 800px:w-[80%] m-auto`}>
         <h1 className="text-center font-Poppins text-[25px] leading-[35px] sm:text-4xl dark:text-white 800px:!leading-[60px] text-[#000] font-[700] tracking-light">
           Expand Your Career{" "}
-          <span className="text-red-500 dark:text-blue-500">Opportunity</span>{" "}
+          <span className="text-[#ffd900]">Opportunity</span>{" "}
           <br />
           Opportunity With Our Courses
         </h1>

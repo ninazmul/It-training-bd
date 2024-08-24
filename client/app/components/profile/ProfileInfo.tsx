@@ -63,13 +63,9 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
           <Image
             width={120}
             height={120}
-            src={
-              user.avatar || avatar
-                ? user.avatar.url || avatar
-                : Avatar
-            }
+            src={user.avatar || avatar ? user.avatar.url || avatar : Avatar}
             alt=""
-            className="w-[120px] h-[120px] object-cover cursor-pointer border-[3px] border-[#37a39a] rounded-full"
+            className="w-[120px] h-[120px] object-cover cursor-pointer border-[3px] border-[#ffd900] rounded-full"
           />
           <input
             type="file"
@@ -123,7 +119,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
             </div>
             <input
               type="submit"
-              className={`!w-[95%] h-[40px] border border-[#37b8ae] text-center dark:text-[#fff] text-black rounded-[3px] mt-8 cursor-pointer`}
+              className={`!w-[95%] h-[40px] bg-[#ffd900] hover:bg-[#ffbb00] text-center text-black rounded-[3px] mt-8 cursor-pointer`}
               required
               value="Update"
             />

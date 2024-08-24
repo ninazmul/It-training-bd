@@ -1,13 +1,13 @@
 "use client";
 
-import { FC, useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
+import { FC, useState, useEffect } from "react";
+import { Box, IconButton, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import Avatar from "../../../../public/Avatar.png"
+import Avatar from "../../../../public/Avatar.png";
 
 // Import icons from MUI
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -75,6 +75,16 @@ const AdminSidebar: FC = () => {
   const [selected, setSelected] = useState("Dashboard");
   const { theme } = useTheme();
   const router = useRouter();
+  const isMdScreen = useMediaQuery("(max-width:960px)"); // md breakpoint is 960px
+
+  // Automatically collapse on medium screens
+  useEffect(() => {
+    if (isMdScreen) {
+      setIsCollapsed(true);
+    } else {
+      setIsCollapsed(false);
+    }
+  }, [isMdScreen]);
 
   const sidebarStyles = {
     width: isCollapsed ? "60px" : "250px",
@@ -87,6 +97,7 @@ const AdminSidebar: FC = () => {
     height: "100vh",
     overflowX: "hidden" as const,
     overflowY: "auto" as const,
+    zIndex: 1000, // Ensures the sidebar is above other content
   };
 
   const logoutHandler = async () => {
@@ -101,7 +112,7 @@ const AdminSidebar: FC = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: isCollapsed ? "center" : "space-between",
           alignItems: "center",
           padding: "10px",
           backgroundColor: theme === "dark" ? "#0d1a3e" : "#f1f1f1",
@@ -141,11 +152,11 @@ const AdminSidebar: FC = () => {
               alt="profile-user"
               width={100}
               height={100}
-              src={userData.data?.avatar?.url || Avatar}
+              src={userData?.data?.avatar?.url || Avatar}
               style={{
                 cursor: "pointer",
                 borderRadius: "50%",
-                border: "3px solid #5b6fe6",
+                border: "3px solid #ffd900",
                 objectFit: "cover",
               }}
             />
@@ -158,12 +169,12 @@ const AdminSidebar: FC = () => {
               color: theme === "dark" ? "#fff" : "#000",
             }}
           >
-            {userData.data?.name}
+            {userData?.data?.name}
           </Typography>
           <Typography
             sx={{ fontSize: "16px", color: theme === "dark" ? "#ddd" : "#555" }}
           >
-            - {userData.data?.role}
+            - {userData?.data?.role}
           </Typography>
         </Box>
       )}
@@ -268,7 +279,7 @@ const AdminSidebar: FC = () => {
           title="Order Analytics"
           to="/admin/orders-analytics"
           icon={
-            <MapOutlinedIcon
+            <BarChartOutlinedIcon
               sx={{ color: theme === "dark" ? "#fff" : "#000" }}
             />
           }
@@ -276,8 +287,8 @@ const AdminSidebar: FC = () => {
           setSelected={setSelected}
         />
         <SidebarItem
-          title="User Analytics"
-          to="/admin/users-analytics"
+          title="Courses Logs"
+          to="/admin/logs/courses-logs"
           icon={
             <ManageHistoryIcon
               sx={{ color: theme === "dark" ? "#fff" : "#000" }}
@@ -286,26 +297,43 @@ const AdminSidebar: FC = () => {
           selected={selected}
           setSelected={setSelected}
         />
+        <SidebarItem
+          title="Orders Logs"
+          to="/admin/logs/orders-logs"
+          icon={
+            <ManageHistoryIcon
+              sx={{ color: theme === "dark" ? "#fff" : "#000" }}
+            />
+          }
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <SidebarItem
+          title="Geo-Analytics"
+          to="/admin/geo"
+          icon={
+            <MapOutlinedIcon
+              sx={{ color: theme === "dark" ? "#fff" : "#000" }}
+            />
+          }
+          selected={selected}
+          setSelected={setSelected}
+        />
         <Box
+          onClick={logoutHandler}
           sx={{
-            marginTop: "auto",
-            padding: "10px",
-            cursor: "pointer",
             display: "flex",
             alignItems: "center",
+            padding: "10px 20px",
+            cursor: "pointer",
             "&:hover": {
-              backgroundColor: theme === "dark" ? "#1f2a48" : "#e0e0e0",
+              backgroundColor: theme === "dark" ? "#333" : "#f0f0f0",
+              color: "#f44336",
             },
           }}
-          onClick={logoutHandler}
         >
-          <ExitToAppIcon sx={{ color: theme === "dark" ? "#fff" : "#000" }} />
-          <Typography
-            sx={{
-              marginLeft: "10px",
-              color: theme === "dark" ? "#fff" : "#000",
-            }}
-          >
+          <ExitToAppIcon sx={{ color: "#f44336" }} />
+          <Typography sx={{ marginLeft: "10px", color: "#f44336" }}>
             Logout
           </Typography>
         </Box>

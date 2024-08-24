@@ -18,6 +18,7 @@ import {
 } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import logo from "../../public/IT logo.png";
 
 type Props = {
   open: boolean;
@@ -84,16 +85,23 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
       <div
         className={`${
           active
-            ? "fixed top-0 left-0 w-full h-[80px] z-[80] bg-white dark:bg-opacity-50 dark:bg-gradient-to-b dark:from-gray-900 dark:to-black border-b dark:border-[#ffffff1c] shadow-xl transition duration-500"
-            : "w-full h-[80px] z-[80] bg-white dark:bg-opacity-50 dark:bg-gradient-to-b dark:shadow border-b dark:border-[#ffffff1c]"
+            ? "fixed top-0 left-0 w-full h-[80px] z-[80] border-b dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl transition duration-500"
+            : "w-full h-[80px] z-[80] shadow-xl border-b dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-40"
         }`}
       >
         <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
           <div className="flex items-center justify-between p-3 h-[80px]">
             <Link
               href="/"
-              className="text-[25px] font-Poopins font-[500] text-black dark:text-white"
+              className="flex items-center gap-2 text-[25px] font-Poopins font-[500] text-black dark:text-white"
             >
+              <Image
+                src={logo}
+                alt=""
+                width={100}
+                height={100}
+                className="w-8 h-8"
+              />
               IT Training BD
             </Link>
             <div className="flex items-center">
@@ -115,7 +123,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
                     alt="User Avatar"
                     className="w-[30px] h-[30px] object-cover rounded-full cursor-pointer"
                     style={{
-                      border: activeItem === 5 ? "2px solid #37a39a" : "none",
+                      border: activeItem === 5 ? "2px solid #ffd900" : "none",
                     }}
                   />
                 </Link>

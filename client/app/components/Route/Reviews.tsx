@@ -64,7 +64,7 @@ const Reviews = (props: Props) => {
         </div>
         <div className="800px:w-[50%] w-full">
           <h3 className={`${styles.title} 800px:!text-[40px]`}>
-            Our Students Are <span className="text-red-500 dark:text-blue-500">Our Strength</span>
+            Our Students Are <span className="text-[#ffd900]">Our Strength</span>
             <br />
             See What They Say About Us
           </h3>

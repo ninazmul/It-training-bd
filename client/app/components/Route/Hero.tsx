@@ -55,11 +55,11 @@ const Hero: FC<Props> = () => {
                 className="flex-1 h-12 px-4 text-gray-800 dark:text-white rounded-l-md outline-none"
               />
               <button
-                className="flex items-center justify-center w-12 h-12 bg-blue-600 hover:bg-blue-700 transition-colors rounded-r-md"
+                className="flex items-center justify-center w-12 h-12 bg-[#ffd900] hover:bg-yellow-700 transition-colors rounded-r-md"
                 onClick={handleSearch}
                 aria-label="Search"
               >
-                <BiSearch className="text-white" size={24} />
+                <BiSearch className="text-black" size={24} />
               </button>
             </div>
           </div>
@@ -76,7 +76,7 @@ const Hero: FC<Props> = () => {
                   className="object-contain w-4/5 h-auto z-10"
                 />
               ) : (
-                <div className="w-full h-[350px] bg-gray-200 flex items-center justify-center text-gray-600">
+                <div className="w-full h-[350px] flex items-center justify-center text-gray-600">
                   No Image Available
                 </div>
               )}

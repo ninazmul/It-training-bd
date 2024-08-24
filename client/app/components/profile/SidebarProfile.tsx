@@ -26,7 +26,9 @@ const SideBarProfile: FC<Props> = ({
     <div className="w-full">
       <div
         className={`w-full flex items-center px-3 py-4 cursor-pointer ${
-          active === 1 ? "dark:bg-slate-800 bg-gray-200" : "bg-transparent"
+          active === 1
+            ? "dark:bg-[#ffd900] bg-gray-200 text-black"
+            : "bg-transparent"
         }`}
         onClick={() => setActive(1)}
       >
@@ -43,7 +45,9 @@ const SideBarProfile: FC<Props> = ({
       </div>
       <div
         className={`w-full flex items-center px-3 py-4 cursor-pointer ${
-          active === 2 ? "dark:bg-slate-800 bg-gray-200" : "bg-transparent"
+          active === 2
+            ? "dark:bg-[#ffd900] bg-gray-200 text-black"
+            : "bg-transparent"
         }`}
         onClick={() => setActive(2)}
       >
@@ -54,7 +58,9 @@ const SideBarProfile: FC<Props> = ({
       </div>
       <div
         className={`w-full flex items-center px-3 py-4 cursor-pointer ${
-          active === 3 ? "dark:bg-slate-800 bg-gray-200" : "bg-transparent"
+          active === 3
+            ? "dark:bg-[#ffd900] bg-gray-200 text-black"
+            : "bg-transparent"
         }`}
         onClick={() => setActive(3)}
       >
@@ -80,8 +86,10 @@ const SideBarProfile: FC<Props> = ({
         </Link>
       )}
       <div
-        className={`w-full flex items-center px-3 py-4 cursor-pointer ${
-          active === 4 ? "dark:bg-slate-800 bg-gray-200" : "bg-transparent"
+        className={`w-full flex items-center px-3 py-4 cursor-pointer hover:bg-[crimson] ${
+          active === 4
+            ? "dark:bg-[#ffd900] bg-gray-200 text-black"
+            : "bg-transparent"
         }`}
         onClick={() => logoutHandler()}
       >
