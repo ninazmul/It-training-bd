@@ -30,6 +30,14 @@ export const courseApi = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    updateOrderPaymentStatus: builder.mutation({
+      query: ({ orderId, isPaid }) => ({
+        url: `update-payment-status`,
+        method: "PUT",
+        body: { orderId, isPaid },
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -37,4 +45,5 @@ export const {
   useGetAllOrdersQuery,
   useCreateOrderMutation,
   useGetOrdersWithMinimalInfoQuery,
+  useUpdateOrderPaymentStatusMutation,
 } = courseApi;

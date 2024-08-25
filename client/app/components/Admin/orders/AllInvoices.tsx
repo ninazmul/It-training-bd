@@ -1,15 +1,19 @@
 "use client";
 
-import { useGetAllOrdersQuery } from "@/redux/features/orders/orderApi";
+import {
+  useGetAllOrdersQuery,
+  useUpdateOrderPaymentStatusMutation,
+} from "@/redux/features/orders/orderApi";
 import { useGetAllUsersQuery } from "@/redux/features/user/userApi";
 import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
-import { Box } from "@mui/material";
+import { Box, Switch } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
 import { AiOutlineMail } from "react-icons/ai";
 import { format } from "timeago.js";
 import Loader from "../../Loader/Loader";
+import { toast } from "react-hot-toast";
 
 type Props = {
   isDashboard?: boolean;
@@ -17,10 +21,11 @@ type Props = {
 
 const AllInvoices = ({ isDashboard }: Props) => {
   const { theme } = useTheme();
-  const { isLoading, data } = useGetAllOrdersQuery({});
+  const { isLoading, data, refetch } = useGetAllOrdersQuery({});
   const { data: usersData } = useGetAllUsersQuery({});
   const { data: coursesData } = useGetAllCoursesQuery({});
   const [orderData, setOrderData] = useState<any[]>([]);
+  const [updateOrderPaymentStatus] = useUpdateOrderPaymentStatusMutation();
 
   useEffect(() => {
     if (data?.orders && usersData?.users && coursesData?.courses) {
@@ -29,19 +34,36 @@ const AllInvoices = ({ isDashboard }: Props) => {
           (user: any) => user._id === order.userId
         );
         const course = coursesData.courses.find(
-          (course: any) => course._id === order.courseId
+          (course: any) => course._id === order.items[0].productId
         );
+
         return {
           ...order,
-          userName: user?.name || "Unknown", // Fallback to "Unknown" if the user is not found
+          userName: user?.name || "Unknown",
           userEmail: user?.email,
           title: course?.name,
-          price: `$${course?.price}`,
+          price: `$${order.totalAmount || course?.price || "N/A"}`,
+          isPaid: order.isPaid ? "Yes" : "No",
         };
       });
       setOrderData(temp);
     }
   }, [data, usersData, coursesData]);
+
+  const handleTogglePaymentStatus = async (
+    orderId: string,
+    currentStatus: boolean
+  ) => {
+    try {
+      const updatedStatus = !currentStatus;
+      await updateOrderPaymentStatus({ orderId, isPaid: updatedStatus });
+      toast.success("Payment status updated successfully!");
+      refetch(); // Refetch data after update
+    } catch (error) {
+      toast.error("Failed to update payment status");
+      console.error("Failed to update payment status", error);
+    }
+  };
 
   const columns = [
     { field: "userName", headerName: "Name", flex: isDashboard ? 0.6 : 0.5 },
@@ -52,6 +74,24 @@ const AllInvoices = ({ isDashboard }: Props) => {
           { field: "title", headerName: "Course Title", flex: 1 },
         ]),
     { field: "price", headerName: "Price", flex: 0.5 },
+    {
+      field: "isPaid",
+      headerName: "Paid",
+      flex: 0.3,
+      renderCell: (params: any) => (
+        <Switch
+          checked={params.row.isPaid === "Yes"}
+          onClick={(event) => event.stopPropagation()} // Stop event propagation
+          onChange={() =>
+            handleTogglePaymentStatus(
+              params.row.id,
+              params.row.isPaid === "Yes"
+            )
+          }
+          color="primary"
+        />
+      ),
+    },
     ...(isDashboard
       ? [{ field: "created_at", headerName: "Created At", flex: 0.5 }]
       : [
@@ -78,7 +118,8 @@ const AllInvoices = ({ isDashboard }: Props) => {
     userName: order.userName,
     userEmail: order.userEmail,
     title: order.title,
-    price: order.price,
+    price: order.items[0].price,
+    isPaid: order.isPaid,
     created_at: format(order.createdAt),
   }));
 

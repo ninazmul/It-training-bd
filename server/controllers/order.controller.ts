@@ -92,6 +92,27 @@ export const createOrder = CatchAsyncError(
   }
 );
 
+// Update Order Payment Status
+export const updateOrderPaymentStatus = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { orderId, isPaid } = req.body;
+
+    if (!orderId || typeof isPaid !== "boolean") {
+      return next(new ErrorHandler("Invalid order ID or payment status", 400));
+    }
+
+    const order = await OrderModel.findById(orderId);
+
+    if (!order) {
+      return next(new ErrorHandler("Order not found", 404));
+    }
+
+    order.isPaid = isPaid;
+    await order.save();
+
+    res.status(200).json({ success: true, order });
+  }
+);
 
 // Get All Orders -- Only for Admin
 export const getAllOrdersForAdmin = CatchAsyncError(
