@@ -35,12 +35,18 @@
             color: #333333;
         }
 
+        .header p {
+            margin: 5px 0;
+            color: #777777;
+        }
+
         .content {
             padding: 20px;
         }
 
         .content h4 {
             margin-top: 0;
+            color: #333333;
         }
 
         .order-details {
@@ -87,7 +93,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Your IT Training BD's Order is Confirmed</h1>
+            <h1>Your IT Training BD Order is Confirmed</h1>
             <p>And we're just as excited as you are.</p>
         </div>
         <div class="content">
@@ -102,7 +108,7 @@
                     <td><%= order.date %></td>
                 </tr>
             </table>
-            <table class="order-details">
+            <table class="order-details" style="margin-top: 20px;">
                 <tr>
                     <th>Item</th>
                     <th>Qty</th>
@@ -114,7 +120,7 @@
                     <td>$<%= order.price %></td>
                 </tr>
             </table>
-            <table class="order-summary">
+            <table class="order-summary" style="margin-top: 20px;">
                 <tr>
                     <th>Subtotal:</th>
                     <td>$<%= order.price %></td>
@@ -124,6 +130,7 @@
                     <td>$<%= order.price %></td>
                 </tr>
             </table>
+            <p style="margin-top: 20px;">You now have access to the course: <strong><%= order.name %></strong>.</p>
         </div>
         <div class="footer">
             <p>&copy; 2024 IT Training BD. All rights reserved.</p>

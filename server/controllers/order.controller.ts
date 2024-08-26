@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
-import userModel from "../models/user.model";
+import userModel, { IUser } from "../models/user.model";
 import CourseModel from "../models/course.model";
 import { getAllOrdersService, getOrdersWithMinimalInfo, newOrder } from "../services/order.service";
 import NotificationModel from "../models/notification.model";
 import { redis } from "../utils/redis";
 import OrderModel, { IOrderData } from "../models/order.model";
+import sendMail from "../utils/sendMail";
+import ejs from "ejs";
+import path from "path";
 
 // Create Order
 export const createOrder = CatchAsyncError(
@@ -51,10 +54,10 @@ export const createOrder = CatchAsyncError(
           {
             productId: course.id.toString(),
             quantity: 1,
-            price: course.price,
+            price: course.estimatedPrice || course.price,
           },
         ],
-        totalAmount: course.price,
+        totalAmount: course.estimatedPrice || course.price,
         isPaid: false,
         paymentMethod: "Manual",
         paymentInfo: {
@@ -92,7 +95,6 @@ export const createOrder = CatchAsyncError(
   }
 );
 
-// Update Order Payment Status
 export const updateOrderPaymentStatus = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     const { orderId, isPaid } = req.body;
@@ -101,18 +103,65 @@ export const updateOrderPaymentStatus = CatchAsyncError(
       return next(new ErrorHandler("Invalid order ID or payment status", 400));
     }
 
-    const order = await OrderModel.findById(orderId);
+    try {
+      // Find the order and populate the userId to access user details
+      const order = await OrderModel.findById(orderId).populate<{
+        userId: IUser;
+      }>("userId");
 
-    if (!order) {
-      return next(new ErrorHandler("Order not found", 404));
+      if (!order) {
+        return next(new ErrorHandler("Order not found", 404));
+      }
+
+      // Update payment status
+      order.isPaid = isPaid;
+      await order.save();
+
+      // Send email if payment is confirmed
+      if (isPaid) {
+        const user = order.userId as IUser; // Ensure that userId is of type IUser
+
+        const emailData = {
+          user: { name: user.name }, // Access user's name
+          orderId: order._id,
+          totalAmount: order.totalAmount,
+        };
+
+        // Render the email template
+        const templatePath = path.join(
+          __dirname,
+          "../mails/order-confirmation.ejs"
+        );
+        const html = await ejs.renderFile(templatePath, emailData);
+
+        // Send the email
+        try {
+          await sendMail({
+            email: user.email,
+            subject: "Order Payment Confirmed",
+            template: "order-confirmation.ejs",
+            data: emailData,
+          });
+
+          res.status(200).json({ success: true, order });
+        } catch (emailError: any) {
+          console.error(
+            "Error sending email:",
+            emailError.message || emailError
+          );
+          return next(
+            new ErrorHandler("Failed to send confirmation email", 500)
+          );
+        }
+      } else {
+        res.status(200).json({ success: true, order });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
     }
-
-    order.isPaid = isPaid;
-    await order.save();
-
-    res.status(200).json({ success: true, order });
   }
 );
+
 
 // Get All Orders -- Only for Admin
 export const getAllOrdersForAdmin = CatchAsyncError(
