@@ -25,6 +25,8 @@ const AllInvoices = ({ isDashboard }: Props) => {
   const { data: usersData } = useGetAllUsersQuery({});
   const { data: coursesData } = useGetAllCoursesQuery({});
   const [orderData, setOrderData] = useState<any[]>([]);
+  const [courseTotals, setCourseTotals] = useState<any>({});
+  const [totalSellingPrice, setTotalSellingPrice] = useState<number>(0);
   const [updateOrderPaymentStatus] = useUpdateOrderPaymentStatusMutation();
 
   useEffect(() => {
@@ -43,15 +45,31 @@ const AllInvoices = ({ isDashboard }: Props) => {
           userEmail: user?.email,
           phone: order.paymentInfo?.phoneNumber || "N/A",
           title: course?.name || "N/A",
-          price: `$${order.totalAmount || course?.price || "N/A"}`,
+          price: order.totalAmount || course?.price || 0,
           transactionId: order.paymentInfo?.transaction_id || "N/A",
           isPaid: order.isPaid ? "Yes" : "No",
         };
       });
       setOrderData(temp);
+
+      // Calculate total selling price for each course and overall total
+      const totals = temp.reduce(
+        (acc: any, order: any) => {
+          const courseTitle = order.title;
+          if (!acc.courseTotals[courseTitle]) {
+            acc.courseTotals[courseTitle] = 0;
+          }
+          acc.courseTotals[courseTitle] += order.price;
+          acc.overallTotal += order.price;
+          return acc;
+        },
+        { courseTotals: {}, overallTotal: 0 }
+      );
+
+      setCourseTotals(totals.courseTotals);
+      setTotalSellingPrice(totals.overallTotal);
     }
   }, [data, usersData, coursesData]);
-
 
   const handleTogglePaymentStatus = async (
     orderId: string,
@@ -136,6 +154,35 @@ const AllInvoices = ({ isDashboard }: Props) => {
         <Loader />
       ) : (
         <Box m={isDashboard ? "0" : "40px"}>
+          <div className="shadow-lg rounded-lg p-6">
+            <h2 className="text-xl md:text-3xl lg:text-4xl py-4 font-semibold text-center text-[#ffd900]">
+              Course-wise Earning:
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-6">
+              {Object.entries(courseTotals).map(([course, total]: any) => (
+                <div
+                  key={course}
+                  className="bg-white dark:bg-[#111c43] text-gray-900 dark:text-white p-4 rounded-md shadow-md text-center"
+                >
+                  <strong className="text-lg md:text-xl lg:text-2xl text-[#ffd900]">
+                    {course}
+                  </strong>
+                  <p className=" text-lg md:text-xl font-medium mt-2 text-gray-900 dark:text-white">
+                    ${total.toFixed(2)}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="bg-white dark:bg-[#111c43] p-6 rounded-md shadow-md text-center mt-4">
+              <strong className="text-xl md:text-2xl lg:text-3xl text-[#ffd900]">
+                Overall Total
+              </strong>
+              <p className=" text-xl md:text-2xl font-semibold mt-2">
+                ${totalSellingPrice.toFixed(2)}
+              </p>
+            </div>
+          </div>
+
           <Box
             m={isDashboard ? "0" : "40px 0 0 0"}
             height={isDashboard ? "35vh" : "90vh"}
