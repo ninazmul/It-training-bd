@@ -8,6 +8,7 @@ import notificationRouter from "./routes/notification.route";
 import analyticsRouter from "./routes/analytics.route";
 import layoutRouter from "./routes/layout.route";
 import { ErrorMiddleware } from "./middleware/error";
+import rateLimit from "express-rate-limit";
 
 require("dotenv").config();
 
@@ -27,6 +28,14 @@ app.use(
     credentials: true,
   })
 );
+
+// api requeset limit
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+});
 
 // routes
 app.use(
@@ -53,5 +62,7 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
   error.statusCode = 404;
   next(error);
 });
+
+app.use(limiter);
 
 app.use(ErrorMiddleware);

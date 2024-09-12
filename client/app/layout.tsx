@@ -12,8 +12,6 @@ import { useEffect } from "react";
 import socketIO from "socket.io-client";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
-const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
-
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -46,11 +44,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 
 const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLoading } = useLoadUserQuery({});
+  const { isLoading, error } = useLoadUserQuery({});
 
   useEffect(() => {
-    socket.on("connection", () => {});
+    const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
+
+    socket.on("connection", () => {
+      console.log("Connected to socket server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
-  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+  if (isLoading) return <Loader />;
+  if (error) return <div>Error loading user data</div>;
+
+  return <>{children}</>;
 };
