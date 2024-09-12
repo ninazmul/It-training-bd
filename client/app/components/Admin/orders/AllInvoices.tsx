@@ -41,16 +41,17 @@ const AllInvoices = ({ isDashboard }: Props) => {
           ...order,
           userName: user?.name || "Unknown",
           userEmail: user?.email,
-          phone: order.phone || "N/A",
-          title: course?.name,
+          phone: order.paymentInfo?.phoneNumber || "N/A",
+          title: course?.name || "N/A",
           price: `$${order.totalAmount || course?.price || "N/A"}`,
-          transactionId: order.transactionId || "N/A",
+          transactionId: order.paymentInfo?.transaction_id || "N/A",
           isPaid: order.isPaid ? "Yes" : "No",
         };
       });
       setOrderData(temp);
     }
   }, [data, usersData, coursesData]);
+
 
   const handleTogglePaymentStatus = async (
     orderId: string,
@@ -121,8 +122,10 @@ const AllInvoices = ({ isDashboard }: Props) => {
     id: order._id,
     userName: order.userName,
     userEmail: order.userEmail,
+    phone: order.phone,
     title: order.title,
     price: order.items[0].price,
+    transactionId: order.transactionId,
     isPaid: order.isPaid,
     created_at: format(order.createdAt),
   }));
