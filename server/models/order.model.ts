@@ -3,6 +3,7 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 // Define Payment Info Interface
 export interface IPaymentInfo {
   transaction_id?: string;
+  phoneNumber?: number;
 }
 
 // Define the Item Interface
@@ -40,6 +41,7 @@ const OrderSchema: Schema<IOrderData> = new Schema(
     paymentMethod: { type: String, required: true },
     paymentInfo: {
       transaction_id: { type: String, default: null },
+      phoneNumber: { type: String, default: null },
     },
   },
   { timestamps: true }

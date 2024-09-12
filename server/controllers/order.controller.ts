@@ -3,7 +3,11 @@ import { CatchAsyncError } from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import userModel, { IUser } from "../models/user.model";
 import CourseModel from "../models/course.model";
-import { getAllOrdersService, getOrdersWithMinimalInfo, newOrder } from "../services/order.service";
+import {
+  getAllOrdersService,
+  getOrdersWithMinimalInfo,
+  newOrder,
+} from "../services/order.service";
 import NotificationModel from "../models/notification.model";
 import { redis } from "../utils/redis";
 import OrderModel, { IOrderData } from "../models/order.model";
@@ -45,7 +49,9 @@ export const createOrder = CatchAsyncError(
       });
 
       if (existingOrder) {
-        return next(new ErrorHandler("An order for this course already exists!", 400));
+        return next(
+          new ErrorHandler("An order for this course already exists!", 400)
+        );
       }
 
       const orderData: IOrderData = {
@@ -62,6 +68,7 @@ export const createOrder = CatchAsyncError(
         paymentMethod: "Manual",
         paymentInfo: {
           transaction_id: transactionId,
+          phoneNumber: phone,
         },
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -162,12 +169,11 @@ export const updateOrderPaymentStatus = CatchAsyncError(
   }
 );
 
-
 // Get All Orders -- Only for Admin
 export const getAllOrdersForAdmin = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await getAllOrdersService(); 
+      const result = await getAllOrdersService();
 
       return res.status(200).json(result);
     } catch (error: any) {

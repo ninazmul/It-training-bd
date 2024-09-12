@@ -41,8 +41,10 @@ const AllInvoices = ({ isDashboard }: Props) => {
           ...order,
           userName: user?.name || "Unknown",
           userEmail: user?.email,
+          phone: order.phone || "N/A",
           title: course?.name,
           price: `$${order.totalAmount || course?.price || "N/A"}`,
+          transactionId: order.transactionId || "N/A",
           isPaid: order.isPaid ? "Yes" : "No",
         };
       });
@@ -71,9 +73,11 @@ const AllInvoices = ({ isDashboard }: Props) => {
       ? []
       : [
           { field: "userEmail", headerName: "Email", flex: 1 },
+          { field: "phone", headerName: "Phone", flex: 0.5 },
           { field: "title", headerName: "Course Title", flex: 1 },
         ]),
     { field: "price", headerName: "Price", flex: 0.5 },
+    { field: "transactionId", headerName: "Transaction ID", flex: 0.7 },
     {
       field: "isPaid",
       headerName: "Paid",
