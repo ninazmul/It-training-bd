@@ -5,7 +5,7 @@ import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import Link from "next/link";
-import { RxAvatar } from "react-icons/rx";
+import defaultAvatar from "../../../public/Avatar.png";
 
 type Props = {
   user: any;
@@ -31,7 +31,7 @@ const SideBarProfile: FC<Props> = ({
         onClick={() => setActive(1)}
       >
         <Image
-          src={user.avatar || avatar ? user.avatar.url || avatar : <RxAvatar />}
+          src={user.avatar || avatar ? user.avatar.url || avatar : defaultAvatar}
           alt=""
           className="w-[20px] h-[20px] object-cover lg:w-[30px] lg:h-[30px] cursor-pointer rounded-full"
           width={20}

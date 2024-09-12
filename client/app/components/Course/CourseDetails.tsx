@@ -25,6 +25,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
   const { data: userData } = useLoadUserQuery(undefined, {});
   const [user, setUser] = useState<any>();
   const [open, setOpen] = useState(false);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
   const { data: ordersData } = useGetOrdersWithMinimalInfoQuery(undefined, {});
 
   useEffect(() => {
@@ -46,12 +47,10 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
     ((data?.estimatedPrice - data?.price) / data?.estimatedPrice) * 100;
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
-  // Check if the course exists in user's courses
   const courseExistInUser = user?.courses.some(
     (course: any) => course._id === data?._id
   );
 
-  // Assuming userData.data.courses is an array with at least one item
   const courses = userData?.data.courses;
   let courseId = null;
   if (courses && courses.length > 0) {
@@ -66,6 +65,12 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
 
   const isCoursePaid = orderForCourse?.isPaid;
   const isOrderAvailable = !!orderForCourse;
+
+  useEffect(() => {
+  if (isOrderAvailable && !isCoursePaid) {
+    setShowApprovalModal(true);
+  }
+}, [isOrderAvailable, isCoursePaid]);
 
   return (
     <div className="w-full px-4 py-5">
@@ -223,10 +228,10 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
                 <h1 className="text-2xl text-black dark:text-white">
                   {data.price === 0
                     ? "Free"
-                    : `${data.estimatedPrice || data.price}$`}
+                    : `${data.estimatedPrice || data.price}৳`}
                 </h1>
                 <h5 className="mt-2 sm:mt-0 sm:ml-3 text-xl line-through text-gray-500">
-                  {data.price}$
+                  {data.price}৳
                 </h5>
                 <h4 className="mt-2 sm:mt-0 sm:ml-5 text-xl text-red-600">
                   {discountPercentagePrice}% Off
@@ -244,7 +249,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
                     </Link>
                   ) : (
                     <button className="block w-full text-center py-3 px-4 bg-red-500 text-white font-medium rounded-lg">
-                      Waiting for Payment
+                      Waiting for Approval
                     </button>
                   )
                 ) : (
@@ -268,13 +273,42 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
         </div>
       </div>
       <>
+        {showApprovalModal && (
+          <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
+            <div className="w-[400px] min-h-[200px] dark:border-[#ffffff1c] bg-white shadow-xl rounded-xl p-5">
+              <div className="w-full flex justify-end">
+                <IoMdCloseCircleOutline
+                  size={30}
+                  className="text-black cursor-pointer"
+                  onClick={() => setShowApprovalModal(false)}
+                />
+              </div>
+              <div className="text-center">
+                <h2 className="text-lg font-bold text-black">
+                  Waiting for Approval
+                </h2>
+                <p className="mt-3 text-black">
+                  Your course is waiting for approval. Admin will approve it
+                  after reviewing all necessary details.
+                </p>
+                <button
+                  className="mt-5 px-4 py-2 bg-[#ffd900] text-black rounded-lg"
+                  onClick={() => setShowApprovalModal(false)}
+                >
+                  Okay
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {open && (
           <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
-            <div className="w-[500px] min-h-[420px] dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl rounded-xl p-3">
+            <div className="w-[500px] min-h-[420px] dark:border-[#ffffff1c] bg-white shadow-xl rounded-xl p-3">
               <div className="w-full flex justify-end">
                 <IoMdCloseCircleOutline
                   size={40}
-                  className="text-black dark:text-white cursor-pointer"
+                  className="text-black cursor-pointer"
                   onClick={() => setOpen(false)}
                 />
               </div>

@@ -1,9 +1,8 @@
 import { styles } from "@/app/styles/styles";
-import {
-  useUpdatePasswordMutation,
-} from "@/redux/features/user/userApi";
+import { useUpdatePasswordMutation } from "@/redux/features/user/userApi";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 type Props = {};
 
@@ -11,9 +10,12 @@ const ChangePassword = (props: Props) => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [updatePassword, { isSuccess, error }] = useUpdatePasswordMutation();
 
-  const passwordChangeHandler = async (e: any) => {
+  const passwordChangeHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (confirmPassword !== newPassword) {
       toast.error("Passwords do not match");
@@ -35,58 +37,67 @@ const ChangePassword = (props: Props) => {
   }, [isSuccess, error]);
 
   return (
-    <div className="w-full pl-7 px-2 800px:px-5 800px:pl-0">
-      <h1 className="block text-[25px] 800px:text-[30px] font-Poopins text-center font-[500] text-black dark:text-[#fff] pb-2">
+    <div className="w-full px-4 sm:px-6 lg:px-8">
+      <h1 className="text-2xl sm:text-3xl font-semibold text-center text-black dark:text-white mb-6">
         Change Password
       </h1>
-      <div className="w-full">
-        <form
-          // aria-required
-          onSubmit={passwordChangeHandler}
-          className="flex flex-col items-center"
-        >
-          <div className="w-[100%] 800px:w-[60%] mt-5">
-            <label className="block pb-2 text-black dark:text-[#fff]">
-              Enter your old password
-            </label>
-            <input
-              type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
-              required
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-          </div>
-          <div className="w-[100%] 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-[#fff]">
-              Enter your new password
-            </label>
-            <input
-              type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div className="w-[100%] 800px:w-[60%] mt-2">
-            <label className="block pb-2 text-black dark:text-[#fff]">
-              Enter your confirm password
-            </label>
-            <input
-              type="password"
-              className={`${styles.input} !w-[95%] mb-4 800px:mb-0 text-black dark:text-[#fff]`}
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <input
-              type="submit"
-              className={`!w-[95%] h-[40px] bg-[#ffd900] hover:bg-[#ffbb00] text-center text-black rounded-[3px] mt-8 cursor-pointer`}
-              required
-              value="Update"
-            />
-          </div>
+      <div className="max-w-md mx-auto">
+        <form onSubmit={passwordChangeHandler} className="space-y-4">
+          {[
+            {
+              label: "Enter your old password",
+              value: oldPassword,
+              setter: setOldPassword,
+              show: showOldPassword,
+              setShow: setShowOldPassword,
+            },
+            {
+              label: "Enter your new password",
+              value: newPassword,
+              setter: setNewPassword,
+              show: showNewPassword,
+              setShow: setShowNewPassword,
+            },
+            {
+              label: "Confirm your new password",
+              value: confirmPassword,
+              setter: setConfirmPassword,
+              show: showConfirmPassword,
+              setShow: setShowConfirmPassword,
+            },
+          ].map(({ label, value, setter, show, setShow }, index) => (
+            <div className="relative" key={index}>
+              <label className="block text-black dark:text-white mb-2">
+                {label}
+              </label>
+              <div className="relative">
+                <input
+                  type={show ? "text" : "password"}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white pr-10`}
+                  required
+                  value={value}
+                  onChange={(e) => setter(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShow(!show)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 dark:text-gray-300"
+                >
+                  {show ? (
+                    <FaEyeSlash className="w-5 h-5" />
+                  ) : (
+                    <FaEye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+          <button
+            type="submit"
+            className="w-full py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-semibold rounded-md"
+          >
+            Update
+          </button>
         </form>
       </div>
     </div>

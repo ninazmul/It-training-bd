@@ -17,7 +17,12 @@ type FormData = {
 
 type Props = {
   setOpen: (open: boolean) => void;
-  data: { _id: string; courseId: string };
+  data: {
+    _id: string;
+    courseId: string;
+    estimatedPrice?: number;
+    price: number;
+  };
   user: {
     name: string;
     email: string;
@@ -91,17 +96,30 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
   };
 
   return (
-    <div className="my-4 rounded-lg shadow-lg max-w-md mx-auto text-black dark:text-white">
-      <h2 className="text-2xl font-semibold mb-6 text-center">
-        Payment method
-      </h2>
+    <div className="my-4 rounded-lg shadow-lg max-w-md mx-auto text-black">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Checkout</h2>
+      <div className="text-center mb-4">
+        <p className="text-xl font-semibold">
+          {data.estimatedPrice ? (
+            <>
+              <span className="text-green-600">Estimated Price: </span>
+              <span>{data.estimatedPrice}৳</span>
+            </>
+          ) : (
+            <>
+              <span className="text-red-600">Price: </span>
+              <span>{data.price}৳</span>
+            </>
+          )}
+        </p>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block font-medium mb-2">
             Name
             <input
               {...register("name", { required: true })}
-              className={`mt-1 block w-full p-2 border ${
+              className={`mt-1 block w-full text-black dark:text-white p-2 border ${
                 errors.name ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Enter your name"
@@ -117,7 +135,7 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
             <input
               type="email"
               {...register("email", { required: true })}
-              className={`mt-1 block w-full p-2 border ${
+              className={`mt-1 block w-full text-black dark:text-white p-2 border ${
                 errors.email ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Enter your email"
@@ -133,7 +151,7 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
             <input
               type="tel"
               {...register("phone", { required: true })}
-              className={`mt-1 block w-full p-2 border ${
+              className={`mt-1 block w-full text-black dark:text-white p-2 border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Enter your phone number"
@@ -144,11 +162,15 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
           </label>
         </div>
         <div>
+          <p className="text-md font-semibold mb-2 text-gray-700">
+            Please send money to this Bkash account:{" "}
+            <span className="font-bold text-black">+8801630211216</span>
+          </p>
           <label className="block font-medium mb-2">
             Transaction ID
             <input
               {...register("transactionId", { required: true })}
-              className={`mt-1 block w-full p-2 border ${
+              className={`mt-1 block w-full text-black dark:text-white p-2 border ${
                 errors.transactionId ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Enter the transaction ID"

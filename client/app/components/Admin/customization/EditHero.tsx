@@ -11,40 +11,43 @@ import { AiOutlineCamera } from "react-icons/ai";
 type Props = {};
 
 const EditHero: FC<Props> = (props: Props) => {
-  const [image, setImage] = useState("");
-  const [title, setTitle] = useState("");
-  const [subTitle, setSubTitle] = useState("");
+  const [image, setImage] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [subTitle, setSubTitle] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
   const { data, refetch } = useGetHeroDataQuery("Banner", {
     refetchOnMountOrArgChange: true,
   });
 
-  const [editLayout, { isLoading, isSuccess, error }] = useEditLayoutMutation();
+  const [editLayout, { isSuccess, error }] = useEditLayoutMutation();
 
   useEffect(() => {
     if (data) {
-      setTitle(data?.layout?.banner.title);
-      setSubTitle(data?.layout?.banner.subTitle);
-      setImage(data?.layout?.banner?.image?.url);
+      setTitle(data?.layout?.banner.title || "");
+      setSubTitle(data?.layout?.banner.subTitle || "");
+      setImage(data?.layout?.banner?.image?.url || "");
     }
     if (isSuccess) {
+      setLoading(false);
       refetch();
       toast.success("Hero updated successfully");
     }
     if (error) {
+      setLoading(false);
       if ("data" in error) {
         const errorData = error as any;
         toast.error(errorData?.data?.message);
       }
     }
-  }, [data, isSuccess, error]);
+  }, [data, isSuccess, error, refetch]);
 
-  const handleUpdate = (e: any) => {
+  const handleUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         if (reader.readyState === 2) {
-          setImage(e.target.result as string);
+          setImage(e.target?.result as string);
         }
       };
       reader.readAsDataURL(file);
@@ -52,6 +55,7 @@ const EditHero: FC<Props> = (props: Props) => {
   };
 
   const handleEdit = async () => {
+    setLoading(true); // Set loading state to true
     await editLayout({
       type: "Banner",
       image,
@@ -60,68 +64,66 @@ const EditHero: FC<Props> = (props: Props) => {
     });
   };
 
+  const hasChanges =
+    data?.layout?.banner?.title !== title ||
+    data?.layout?.banner?.subTitle !== subTitle ||
+    data?.layout?.banner?.image?.url !== image;
+
   return (
-    <div className="w-full 1000px:flex items-center mt-6">
-      <div className="absolute top-[100px] 1000px:top-[unset] 1500px:h-[700px] 1500px:w-[700px] 1100px:h-[500px] 1100px:w-[500px] h-[50vh] w-[50vh] hero_animation rounded-[50%] 1100px:left-[18rem] 1500px:left-[21rem]"></div>
-      <div className="1000px:w-[40%] flex 1000px:min-h-screen items-center justify-end pt-[70px] 1000px:pt-[0] z-10">
-        <div className="relative flex items-center justify-end">
-          <img
-            src={image}
-            alt=""
-            className="object-contain 1100px:max-w-[190%] w-[190%] 1500px:max-w-[185%] h-[auto] z-[10]"
-          />
+    <div className="relative w-full flex flex-col lg:flex-row items-center text-black dark:text-white py-10 lg:py-20 px-5">
+      <div className="relative w-full flex flex-col items-center lg:items-start text-center lg:text-left p-4 space-y-6 z-10 mt-4 bg-white dark:bg-[#111c43] shadow-lg rounded-lg">
+        <textarea
+          className="px-4 py-2 focus:outline-none dark:text-white text-black w-full font-bold text-4xl lg:text-5xl bg-transparent resize-none border border-gray-300 dark:border-gray-700 rounded-md"
+          rows={4}
+          placeholder="Enter Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          className="px-4 py-2 focus:outline-none dark:text-white text-black w-full font-medium text-lg lg:text-xl bg-transparent border border-gray-300 dark:border-gray-700 rounded-md"
+          placeholder="Enter Subtitle"
+          value={subTitle}
+          onChange={(e) => setSubTitle(e.target.value)}
+        />
+        <div className="relative w-full max-w-md mt-4">
           <input
             type="file"
-            name=""
             id="banner"
             accept="image/*"
             onChange={handleUpdate}
             className="hidden"
           />
-          <label htmlFor="banner" className="absolute bottom-0 right-0 z-20">
-            <AiOutlineCamera className="dark:text-white text-black text-[18px] cursor-pointer" />
+          <label
+            htmlFor="banner"
+            className="absolute bottom-0 right-0 z-20 cursor-pointer"
+          >
+            <AiOutlineCamera className="text-xl text-gray-700 dark:text-gray-400" />
           </label>
+          {image ? (
+            <img
+              src={image}
+              alt="Hero Image"
+              className="object-cover w-full max-w-sm h-auto rounded-md shadow-sm"
+            />
+          ) : (
+            <div className="w-full max-w-sm h-[350px] flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md shadow-sm">
+              No Image Available
+            </div>
+          )}
         </div>
-      </div>
-      <div className="1000px:w-[60%] pl-[150px] pr-[50px] flex flex-col items-center 1000px:mt-[0px] text-center 1000px:text-left mt-[150px]">
-        <textarea
-          className="px-3 focus:outline-none dark:text-white text-black w-full font-[600] text-[30px] 1000px:text-[60px] 1500px:text-[70px] bg-transparent resize-none"
-          rows={4}
-          placeholder="Improve Your Online learning Experience Better Instanly"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <br />
-        <textarea
-          className="px-3 focus:outline-none dark:text-white text-black w-full font-[600] text-[8px] 1000px:text-[15px] 1500px:text-[20px] bg-transparent resize-none"
-          placeholder="Improve Your ONline learning Experience Better Instanly"
-          value={subTitle}
-          onChange={(e) => setSubTitle(e.target.value)}
-        />
-        <br />
-        <br />
-        <div
+        <button
           className={`${
             styles.button
-          } !w-[100px] !min-h-[40px] !h-[40px] text-black bg-[#cccccc34]
-            ${
-              data?.layout?.banner?.title !== title ||
-              data?.layout?.banner?.subTitle !== subTitle ||
-              data?.layout?.banner?.image !== image
-                ? "!cursor-pointer !bg-[#ffd900]"
-                : "!cursor-not-allowed"
-            }
-            !rounded absolute bottom-12 right-12`}
-          onClick={
-            data?.layout?.banner?.title !== title ||
-            data?.layout?.banner?.subTitle !== subTitle ||
-            data?.layout?.banner?.image !== image
-              ? handleEdit
-              : () => null
-          }
+          } w-[120px] h-[45px] text-black bg-[#ffd900] hover:bg-[#d7b700]active:bg-[#d7b700] rounded-md transition duration-300 ease-in-out mt-4 ${
+            hasChanges && !loading
+              ? "cursor-pointer"
+              : "cursor-not-allowed opacity-50"
+          }`}
+          onClick={hasChanges && !loading ? handleEdit : () => null}
+          disabled={!hasChanges || loading}
         >
-          Save
-        </div>
+          {loading ? "Saving..." : "Save"}
+        </button>
       </div>
     </div>
   );
