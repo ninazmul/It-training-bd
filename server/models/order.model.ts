@@ -13,8 +13,8 @@ interface IOrderItem {
   price: number;
 }
 
-// Define Order Interface
-export interface IOrderData {
+// Define Order Interface that extends Mongoose Document
+export interface IOrderData extends Document {
   userId: string;
   items: IOrderItem[];
   totalAmount: number;

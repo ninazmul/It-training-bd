@@ -54,7 +54,8 @@ export const createOrder = CatchAsyncError(
         );
       }
 
-      const orderData: IOrderData = {
+      // Create a new order instance
+      const order = new OrderModel({
         userId: user.id.toString(),
         items: [
           {
@@ -70,12 +71,12 @@ export const createOrder = CatchAsyncError(
           transaction_id: transactionId,
           phoneNumber: phone,
         },
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
-      // Implement your mail sending logic here
+      // Save the new order
+      await order.save();
 
+      // Update user and course
       user.courses.push(course.id);
       await redis.set(req.user?._id as string, JSON.stringify(user));
       await user.save();
@@ -93,8 +94,7 @@ export const createOrder = CatchAsyncError(
       }
       await course.save();
 
-      await newOrder(orderData);
-
+      // Implement your mail sending logic here
       res.status(200).json({ success: true });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
