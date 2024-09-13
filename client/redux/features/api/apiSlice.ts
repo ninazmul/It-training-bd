@@ -15,7 +15,7 @@ export const apiSlice = createApi({
       }),
     }),
     loadUser: builder.query({
-      query: (data) => ({
+      query: () => ({
         url: "me",
         method: "GET",
         credentials: "include" as const,
@@ -30,7 +30,7 @@ export const apiSlice = createApi({
             })
           );
         } catch (error: any) {
-          console.log(error);
+          console.error("Error loading user data:", error);
         }
       },
     }),

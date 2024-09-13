@@ -10,8 +10,8 @@ import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./components/Loader/Loader";
 import { useEffect } from "react";
 import socketIO from "socket.io-client";
-
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -44,22 +44,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 
 const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLoading, error } = useLoadUserQuery({});
+  const { isLoading } = useLoadUserQuery({});
 
   useEffect(() => {
-    const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
-
-    socket.on("connection", () => {
-      console.log("Connected to socket server");
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+    socketId.on("connection", () => {});
   }, []);
 
-  if (isLoading) return <Loader />;
-  if (error) return <div>Error loading user data</div>;
-
-  return <>{children}</>;
+  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
 };
