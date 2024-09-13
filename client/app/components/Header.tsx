@@ -31,9 +31,11 @@ type Props = {
 const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+
   const {
     data: userData,
     isLoading,
+    error,
     refetch,
   } = useLoadUserQuery(undefined, {});
   const { data: sessionData } = useSession();
@@ -43,11 +45,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   useLogoutQuery(undefined, { skip: !logout });
 
   const handleScroll = useCallback(() => {
-    if (window.scrollY > 85) {
-      setActive(true);
-    } else {
-      setActive(false);
-    }
+    setActive(window.scrollY > 85);
   }, []);
 
   useEffect(() => {
@@ -56,6 +54,11 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   }, [handleScroll]);
 
   useEffect(() => {
+    if (error) {
+      console.error("Error loading user data:", error);
+      return;
+    }
+
     if (!isLoading && sessionData) {
       if (!userData) {
         socialAuth({
@@ -72,13 +75,13 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
     if (isSuccess) {
       toast.success("Login successful");
     }
-  }, [sessionData, userData, isLoading, isSuccess, refetch, socialAuth]);
+  }, [sessionData, userData, isLoading, isSuccess, refetch, socialAuth, error]);
 
-  const handleCloseSidebar = (e: React.MouseEvent) => {
+  const handleCloseSidebar = useCallback((e: React.MouseEvent) => {
     if (e.currentTarget.id === "screen") {
       setOpenSidebar(false);
     }
-  };
+  }, []);
 
   return (
     <div className="w-full relative">
@@ -97,7 +100,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
             >
               <Image
                 src={logo}
-                alt=""
+                alt="Company Logo"
                 width={100}
                 height={100}
                 className="w-8 h-8"

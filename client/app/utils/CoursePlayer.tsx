@@ -14,7 +14,7 @@ const CoursePlayer: FC<Props> = ({ videoUrl, title }) => {
 
   useEffect(() => {
     axios
-      .post("http://localhost:8000/api/v1/getVdoCipherOTP", {
+      .post("https://it-server.up.railway.app/api/v1/getVdoCipherOTP", {
         videoId: videoUrl,
       })
       .then((res) => {
