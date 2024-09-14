@@ -72,6 +72,7 @@ const CourseDetails = ({ data, setRoute, setOpen: openAuthModal }: Props) => {
   }
 }, [isOrderAvailable, isCoursePaid]);
 
+  console.log("data", data)
   return (
     <div className="w-full px-4 py-5">
       <div className="w-full max-w-screen-xl mx-auto py-5">

@@ -46,15 +46,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 
 const Custom: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isLoading } = useLoadUserQuery({});
+  const { isLoading } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
     socket.on("connection", () => {});
-    // Clean up the socket connection when the component unmounts
     return () => {
       socket.off("connection");
     };
   }, []);
 
-  return <>{isLoading ? <Loader /> : <>{children}</>}</>;
+  return <>{isLoading ? <Loader /> : children}</>;
 };

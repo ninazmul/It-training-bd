@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import React, { FC, useEffect, useState, useCallback } from "react";
 import NavItems from "../utils/NavItems";
@@ -17,8 +15,8 @@ import {
   useSocialAuthMutation,
 } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
-import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import logo from "../../public/IT logo.png";
+import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 
 type Props = {
   open: boolean;
@@ -31,6 +29,7 @@ type Props = {
 const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   const [active, setActive] = useState(false);
   const [openSidebar, setOpenSidebar] = useState(false);
+  const [hasShownToast, setHasShownToast] = useState(false);
   const {
     data: userData,
     isLoading,
@@ -43,11 +42,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   useLogoutQuery(undefined, { skip: !logout });
 
   const handleScroll = useCallback(() => {
-    if (window.scrollY > 85) {
-      setActive(true);
-    } else {
-      setActive(false);
-    }
+    setActive(window.scrollY > 85);
   }, []);
 
   useEffect(() => {
@@ -56,23 +51,30 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
   }, [handleScroll]);
 
   useEffect(() => {
-    if (!isLoading && sessionData) {
-      if (!userData) {
-        socialAuth({
-          email: sessionData.user?.email,
-          name: sessionData.user?.name,
-          avatar: sessionData.user?.image,
-        });
-        refetch();
-      } else if (!userData && sessionData === null) {
-        setLogout(true);
-      }
+    if (sessionData && !userData && !isLoading) {
+      socialAuth({
+        email: sessionData.user?.email,
+        name: sessionData.user?.name,
+        avatar: sessionData.user?.image,
+      });
+      refetch();
+    } else if (!userData && sessionData === null) {
+      setLogout(true);
     }
 
-    if (isSuccess) {
-      toast.success("Login successful");
+    if (isSuccess && !hasShownToast) {
+      toast.success("Login successful!");
+      setHasShownToast(true);
     }
-  }, [sessionData, userData, isLoading, isSuccess, refetch, socialAuth]);
+  }, [
+    sessionData,
+    userData,
+    isLoading,
+    isSuccess,
+    refetch,
+    socialAuth,
+    hasShownToast,
+  ]);
 
   const handleCloseSidebar = (e: React.MouseEvent) => {
     if (e.currentTarget.id === "screen") {
@@ -151,7 +153,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
                 onClick={() => setOpen(true)}
               />
               <p className="text-[16px] px-2 pl-5 text-black dark:text-white mt-5">
-                &copy; {new Date().getFullYear()} Your Company Name. All rights
+                &copy; {new Date().getFullYear()} IT Training BD. All rights
                 reserved.
               </p>
             </div>
