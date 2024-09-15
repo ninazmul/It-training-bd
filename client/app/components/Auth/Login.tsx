@@ -51,10 +51,10 @@ const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
         toast.error(errorData.data.message);
       }
     }
-  }, [isSuccess, error, setOpen]);
+  }, [isSuccess, error]);
 
   const { errors, touched, values, handleChange, handleSubmit } = formik;
-
+  
   return (
     <div className="w-full text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
       <h1 className={`${styles.title}`}>Login With IT Training BD</h1>

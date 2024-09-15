@@ -27,60 +27,58 @@ type Props = {
 };
 
 const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
-  const [active, setActive] = useState(false);
-  const [openSidebar, setOpenSidebar] = useState(false);
-  const [hasShownToast, setHasShownToast] = useState(false);
-  const {
-    data: userData,
-    isLoading,
-    refetch,
-  } = useLoadUserQuery(undefined, {});
-  const { data: sessionData } = useSession();
-  const [socialAuth, { isSuccess }] = useSocialAuthMutation();
-  const [logout, setLogout] = useState(false);
+    const [active, setActive] = useState(false);
+    const [openSidebar, setOpenSidebar] = useState(false);
+    const {
+      data: userData,
+      isLoading,
+      refetch,
+    } = useLoadUserQuery(undefined, { refetchOnMountOrArgChange: true });
+    const { data } = useSession();
+    const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+    const [logout, setLogout] = useState(false);
+    const {} = useLogoutQuery(undefined, {
+      skip: !logout ? true : false,
+    });
 
-  useLogoutQuery(undefined, { skip: !logout });
+    useEffect(() => {
+      if (!isLoading) {
+        if (!userData) {
+          if (data) {
+            socialAuth({
+              email: data?.user?.email,
+              name: data?.user?.name,
+              avatar: data?.user?.image,
+            });
+            refetch();
+          }
+        }
+        if (data === null) {
+          if (isSuccess) {
+            toast.success("Login successfully");
+          }
+        }
+        if (data === null && !isLoading && !userData) {
+          setLogout(true);
+        }
+      }
+    }, [data, userData, isLoading]);
 
-  const handleScroll = useCallback(() => {
-    setActive(window.scrollY > 85);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
-
-  useEffect(() => {
-    if (sessionData && !userData && !isLoading) {
-      socialAuth({
-        email: sessionData.user?.email,
-        name: sessionData.user?.name,
-        avatar: sessionData.user?.image,
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 80) {
+          setActive(true);
+        } else {
+          setActive(false);
+        }
       });
-      refetch();
-    } else if (!userData && sessionData === null) {
-      setLogout(true);
     }
 
-    if (isSuccess && !hasShownToast) {
-      toast.success("Login successful!");
-      setHasShownToast(true);
-    }
-  }, [
-    sessionData,
-    userData,
-    isLoading,
-    isSuccess,
-    refetch,
-    socialAuth,
-    hasShownToast,
-  ]);
-
-  const handleCloseSidebar = (e: React.MouseEvent) => {
-    if (e.currentTarget.id === "screen") {
-      setOpenSidebar(false);
-    }
-  };
+    const handleClose = (e: any) => {
+      if (e.target.id === "screen") {
+        setOpenSidebar(false);
+      }
+    };
 
   return (
     <div className="w-full relative">
@@ -95,11 +93,11 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
           <div className="flex items-center justify-between p-3 h-[80px]">
             <Link
               href="/"
-              className="flex items-center gap-2 text-[25px] font-Poopins font-[500] text-black dark:text-white"
+              className="flex items-center gap-2 text-xl md:text-[25px] font-Poopins font-[500] text-black dark:text-white"
             >
               <Image
                 src={logo}
-                alt=""
+                alt="Logo"
                 width={100}
                 height={100}
                 className="w-8 h-8"
@@ -109,13 +107,6 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
             <div className="flex items-center">
               <NavItems activeItem={activeItem} isMobile={false} />
               <ThemeSwitcher />
-              <div className="800px:hidden">
-                <HiOutlineMenuAlt3
-                  size={25}
-                  className="cursor-pointer dark:text-white text-black"
-                  onClick={() => setOpenSidebar(true)}
-                />
-              </div>
               {userData ? (
                 <Link href="/profile">
                   <Image
@@ -132,34 +123,36 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
               ) : (
                 <HiOutlineUserCircle
                   size={25}
-                  className="hidden 800px:block cursor-pointer dark:text-white text-black"
+                  className="cursor-pointer dark:text-white text-black"
                   onClick={() => setOpen(true)}
                 />
               )}
+              <div className="800px:hidden ml-4">
+                <HiOutlineMenuAlt3
+                  size={25}
+                  className="cursor-pointer dark:text-white text-black"
+                  onClick={() => setOpenSidebar(true)}
+                />
+              </div>
             </div>
           </div>
         </div>
-        {openSidebar && (
-          <div
-            className="fixed w-full h-screen top-0 left-0 z-[99999] dark:bg-[unset] bg-[#00000024]"
-            onClick={handleCloseSidebar}
-            id="screen"
-          >
-            <div className="fixed z-[9999999999] w-[69%] h-screen top-0 right-0 bg-white dark:bg-gradient-to-b dark:from-[#0d0141] dark:to-[#0d0523] dark:bg-opacity-90">
-              <NavItems activeItem={activeItem} isMobile={true} />
-              <HiOutlineUserCircle
-                size={25}
-                className="cursor-pointer dark:text-white text-black ml-5 my-2"
-                onClick={() => setOpen(true)}
-              />
-              <p className="text-[16px] px-2 pl-5 text-black dark:text-white mt-5">
-                &copy; {new Date().getFullYear()} IT Training BD. All rights
-                reserved.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
+      {openSidebar && (
+        <div
+          className="fixed w-full h-screen top-0 left-0 z-[99999] dark:bg-[unset] bg-[#00000024]"
+          onClick={handleClose}
+          id="screen"
+        >
+          <div className="fixed z-[9999999999] w-[69%] h-screen top-0 right-0 bg-white dark:bg-gradient-to-b dark:from-[#0d0141] dark:to-[#0d0523] dark:bg-opacity-90">
+            <NavItems activeItem={activeItem} isMobile={true} />
+            <p className="text-[16px] px-2 pl-5 text-black dark:text-white mt-5">
+              &copy; {new Date().getFullYear()} IT Training BD. All rights
+              reserved.
+            </p>
+          </div>
+        </div>
+      )}
       {open && (
         <CustomModal
           open={open}

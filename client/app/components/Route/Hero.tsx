@@ -52,7 +52,7 @@ const Hero: FC<Props> = () => {
                 placeholder="Search Courses..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="flex-1 h-12 px-4 text-gray-800 dark:text-white rounded-l-md outline-none"
+                className="flex-1 h-12 px-4 bg-transparent text-gray-800 dark:text-white rounded-l-md outline-none border border-r-0"
               />
               <button
                 className="flex items-center justify-center w-12 h-12 bg-yellow-400 hover:bg-yellow-500 transition-colors rounded-r-md"
