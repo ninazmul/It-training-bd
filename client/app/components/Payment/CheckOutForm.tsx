@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { useCreateOrderMutation } from "@/redux/features/orders/orderApi";
 import socketIO from "socket.io-client";
 import toast from "react-hot-toast";
+import Link from "next/link";
+import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+import { MdOutlineCheckBox } from "react-icons/md";
 
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
@@ -48,6 +51,7 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
   });
 
   const [createOrder, { isLoading }] = useCreateOrderMutation();
+  const [isCheckedIn, setIsCheckedIn] = useState(false);
 
   useEffect(() => {
     const alreadyEnrolled = user.courses.some(
@@ -96,7 +100,7 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
   };
 
   return (
-    <div className="my-4 rounded-lg shadow-lg max-w-md mx-auto text-black">
+    <div className="my-4 rounded-lg max-w-md mx-auto text-black">
       <h2 className="text-2xl font-semibold mb-6 text-center">Checkout</h2>
       <div className="text-center mb-4">
         <p className="text-xl font-semibold">
@@ -179,10 +183,33 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
               <p className="text-red-500 text-sm">Transaction ID is required</p>
             )}
           </label>
+          <br />
+          <p className="text-md font-semibold mb-2 text-gray-700 flex items-center">
+            <span
+              onClick={() => setIsCheckedIn(!isCheckedIn)}
+              className={`cursor-pointer p-1 ${
+                isCheckedIn ? "text-green-500" : "text-gray-700"
+              }`}
+            >
+              {isCheckedIn ? (
+                <MdOutlineCheckBox size={24} />
+              ) : (
+                <MdOutlineCheckBoxOutlineBlank size={24} />
+              )}
+            </span>
+            Before checking in, please fill out this{" "}
+            <Link
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeITd-X6mYbCpIIGbHsiNSx6BK3BXBoh37afmnw5UB_K10eUQ/viewform"
+              target="_blank"
+              className="font-bold text-[#ffd900] px-1 hover:border-b-2 border-[#ffd900]"
+            >
+              Google Form
+            </Link>
+          </p>
         </div>
         <button
           type="submit"
-          disabled={isLoading || isSubmitted}
+          disabled={isLoading || isSubmitted || !isCheckedIn}
           className="w-full py-2 px-4 bg-[#ffd900] text-black font-semibold rounded-md hover:bg-[#ffae00] transition duration-200"
         >
           {isLoading ? "Submitting..." : "Submit"}
