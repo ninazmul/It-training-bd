@@ -13,7 +13,7 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated === false) {
-      toast.error("Log out Successfully!");
+      toast.error("User logged out!");
       redirect("/");
     }
   }, [isAuthenticated]);
