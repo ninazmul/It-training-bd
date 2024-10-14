@@ -210,7 +210,7 @@ const CheckOutForm: React.FC<Props> = ({ setOpen, data, user }) => {
         <button
           type="submit"
           disabled={isLoading || isSubmitted || !isCheckedIn}
-          className="w-full py-2 px-4 bg-[#ffd900] text-black font-semibold rounded-md hover:bg-[#ffae00] transition duration-200"
+          className="w-full py-2 px-4 bg-[#ffd900] text-black font-semibold rounded-md hover:bg-[#ffae00] transition duration-200 disabled:bg-gray-300 disabled:text-gray-500"
         >
           {isLoading ? "Submitting..." : "Submit"}
         </button>
