@@ -4,6 +4,7 @@ import Heading from "../utils/Heading";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import About from "./About";
+import Instructors from "./Instructors";
 
 type Props = {};
 
@@ -27,6 +28,7 @@ const Page = (props: Props) => {
         route={route}
       />
       <About />
+      <Instructors />
       <Footer />
     </div>
   );
