@@ -32,7 +32,7 @@ const AllBlogs = () => {
       field: "delete",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: { row: { id: React.SetStateAction<string>; }; }) => (
+      renderCell: (params: { row: { id: React.SetStateAction<string> } }) => (
         <Button
           onClick={() => {
             setOpen(true);
@@ -46,7 +46,7 @@ const AllBlogs = () => {
   ];
 
   const rows =
-    data?.blogs.map((item: { _id: any; title: any; description: any; }) => ({
+    data?.blogs.map((item: { _id: any; title: any; description: any }) => ({
       id: item._id,
       title: item?.blog?.title,
       description: item?.blog?.description,
