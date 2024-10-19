@@ -49,7 +49,7 @@ const Page = () => {
       ) : (
         <>
           <Header
-            activeItem={1}
+            activeItem={2}
             open={false}
             setOpen={() => {}}
             route={""}
