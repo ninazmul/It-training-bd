@@ -9,9 +9,28 @@ import Footer from "../components/Footer";
 import Loader from "../components/Loader/Loader";
 import BlogCard from "../components/Blog/BlogCard";
 
+// Define the type for a blog image
+type BlogImage = {
+  public_id: string;
+  url: string;
+  _id: string;
+};
+
+// Update the Blog interface to match the data structure
+interface Blog {
+  _id: string;
+  blog: {
+    title: string;
+    description: string;
+    image: BlogImage;
+  };
+}
+
 const Page = () => {
   const { data, isLoading, isError } = useGetAllBlogsQuery(undefined, {});
-  const [blogs, setBlogs] = useState([]);
+
+  // Use the Blog type for the blogs array
+  const [blogs, setBlogs] = useState<Blog[]>([]);
 
   useEffect(() => {
     if (data?.blogs) {

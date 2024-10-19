@@ -48,8 +48,8 @@ const AllBlogs = () => {
   const rows =
     data?.blogs.map((item: { _id: any; title: any; description: any }) => ({
       id: item._id,
-      title: item?.blog?.title,
-      description: item?.blog?.description,
+      title: item.title,
+      description: item.description,
     })) || [];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const AllBlogs = () => {
       setOpen(false);
     }
     if (errorDelete) {
-      toast.error(errorDelete?.data?.message || "An error occurred");
+      toast.error("An error occurred while Delete Blog!");
     }
   }, [isSuccess, errorDelete, refetch]);
 
