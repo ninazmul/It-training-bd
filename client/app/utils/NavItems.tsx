@@ -13,6 +13,10 @@ export const navItemsData = [
     url: "/courses",
   },
   {
+    name: "Blogs",
+    url: "/blogs",
+  },
+  {
     name: "About",
     url: "/about",
   },
@@ -38,13 +42,12 @@ const NavItems: React.FC<Props> = ({ activeItem, isMobile }) => {
         {navItemsData &&
           navItemsData.map((i, index) => (
             <Link href={`${i.url}`} key={index} passHref>
-              {" "}
               <span
                 className={`${
                   activeItem === index
                     ? " text-[#ffd900] border-b-2 border-[#ffd900]"
                     : "dark:text-white text-black"
-                } text-[18px] px-6 font-Poppins font-[400]`}
+                } text-[18px] px-3 lg:px-6 font-Poppins font-[400]`}
               >
                 {i.name}
               </span>
