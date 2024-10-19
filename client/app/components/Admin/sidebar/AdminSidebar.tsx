@@ -234,6 +234,26 @@ const AdminSidebar: FC = () => {
           setSelected={setSelected}
         />
         <SidebarItem
+          title="Create Blog"
+          to="/admin/create-blog"
+          icon={
+            <VideoCallIcon sx={{ color: theme === "dark" ? "#fff" : "#000" }} />
+          }
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <SidebarItem
+          title="Live Blogs"
+          to="/admin/blogs"
+          icon={
+            <OndemandVideoIcon
+              sx={{ color: theme === "dark" ? "#fff" : "#000" }}
+            />
+          }
+          selected={selected}
+          setSelected={setSelected}
+        />
+        <SidebarItem
           title="Hero"
           to="/admin/hero"
           icon={<WebIcon sx={{ color: theme === "dark" ? "#fff" : "#000" }} />}
