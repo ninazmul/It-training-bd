@@ -76,7 +76,7 @@ const Verification: FC<Props> = ({ setRoute }) => {
   };
 
   return (
-    <div className="text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
+    <div className="text-black dark:text-white dark:border-[#ffffff1c]">
       <h1 className={`${styles.title}`}>Verify your Account</h1>
       <br />
       <div className="w-full flex items-center justify-center mt-2">

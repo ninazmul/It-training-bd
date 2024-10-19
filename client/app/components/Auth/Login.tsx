@@ -56,7 +56,7 @@ const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
   const { errors, touched, values, handleChange, handleSubmit } = formik;
   
   return (
-    <div className="w-full text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
+    <div className="w-full text-black dark:text-white dark:border-[#ffffff1c]">
       <h1 className={`${styles.title}`}>Login With IT Training BD</h1>
       <form onSubmit={handleSubmit}>
         <label className={`${styles.label}`} htmlFor="email">

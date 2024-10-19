@@ -55,7 +55,7 @@ const SignUp: FC<Props> = ({ setRoute }) => {
   const { errors, touched, values, handleChange, handleSubmit } = formik;
 
   return (
-    <div className="w-full text-black dark:text-white dark:border-[#ffffff1c] backdrop-blur-lg bg-opacity-75 shadow-xl">
+    <div className="w-full text-black dark:text-white dark:border-[#ffffff1c]">
       <h1 className={`${styles.title}`}>Join IT Training BD</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">

@@ -58,7 +58,7 @@ const Profile: FC<Props> = ({ user }) => {
   }, [data, user.courses]);
 
   return (
-    <div className="flex flex-col md:flex-row w-[85%] mx-auto">
+    <div className="flex flex-col md:flex-row w-[85%] mx-auto text-black dark:text-white">
       <div
         className={`w-full md:w-[60px] 800px:w-[310px] rounded-md shadow-xl border-b border-[#ffd900] backdrop-blur-lg bg-opacity-40 mt-4 md:mt-[80px] md:mb-[80px] md:sticky ${
           scroll ? "top-[120px]" : "top-[30px]"
