@@ -243,7 +243,7 @@ const AdminSidebar: FC = () => {
           setSelected={setSelected}
         />
         <SidebarItem
-          title="Live Blogs"
+          title="All Blogs"
           to="/admin/blogs"
           icon={
             <OndemandVideoIcon
